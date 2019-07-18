@@ -1,0 +1,4444 @@
+#include "Turboc.h"
+#define PRINTCARD_X 35
+#define PRINTCARD_Y 1
+#define DELAYTIME 30
+
+//초반에 화면 메뉴 정할 때 
+#define UP 0
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3   
+#define SUBMIT 4 // 선택 
+
+#define PLAYER1NUMBER -1
+#define PLAYER2NUMBER -2
+
+#define SPIDER_NUMBER 1
+#define RABBIT_NUMBER 2
+#define BIRD_NUMBER 3
+
+#define MR 1
+#define ML 2
+#define MU 3
+#define MD 4
+#define SK1 5
+#define SK2 6
+#define SK3 7
+#define GUA 8
+
+#define SPIDER_SKILL1_DAMAGE 35
+#define SPIDER_SKILL2_DAMAGE 20
+#define SPIDER_SKILL3_DAMAGE 35
+#define RABBIT_SKILL1_HEAL 10
+#define RABBIT_SKILL2_DAMAGE 15
+#define RABBIT_SKILL3_DAMAGE 30
+#define BIRD_SKILL1_DAMAGE 25
+#define BIRD_SKILL2_DAMAGE 15
+#define BIRD_SKILL3_DAMAGE 20
+
+int map[25][33] = {
+   {1,6,6,6,6,6,6,6,22,6,6,6,6,6,6,6,22,6,6,6,6,6,6,6,22,6,6,6,6,6,6,6,2},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {25,6,6,6,6,6,6,6,16,6,6,6,6,6,6,6,16,6,6,6,6,6,6,6,16,6,6,6,6,6,6,6,23},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {25,6,6,6,6,6,6,6,16,6,6,6,6,6,6,6,16,6,6,6,6,6,6,6,16,6,6,6,6,6,6,6,23},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5},
+   {3,6,6,6,6,6,6,6,21,6,6,6,6,6,6,6,21,6,6,6,6,6,6,6,21,6,6,6,6,6,6,6,4}
+};
+int player1_temp_choice;//이펙트 구현 할때만 사용
+int player2_temp_choice;
+
+struct player_card_order {
+	int first_card;
+	int second_card;
+	int third_card;
+};
+int pause()
+{
+	gotoxy(0, 28);
+	system("pause");
+}
+
+int main()
+{
+	int menu;
+
+	setcursortype(NOCURSOR); //커서 없애기
+	system("mode con cols=120 lines=30 | title beastard"); //크기 조정하기
+
+	menu = Mainmenu();
+	if (menu == 0)
+	{
+		system("cls");
+		int player1_choice, player2_choice;//플레이어 캐릭터 선택
+		character_choice(&player1_choice, &player2_choice); // 캐릭터 선택 함수
+		printf("\n");
+		system("pause");
+		PrintFirstMap(player1_choice, player2_choice); // 처음 맵 출력
+		battle(player1_choice, player2_choice); //전투가 이루어지는 함수
+	}
+	else if (menu == 2)
+	{
+		gamerule();
+		main();
+	}
+	else
+	{
+		system("cls");
+		GameClose(10, 10);
+
+		printf("\n\n\n\n\n\n\n\n\n\n\n");
+		return 0;
+	}
+}
+
+//게임 시작을 눌렀을 경우 들어가는 함수
+int battle(int player1_choice, int player2_choice)
+{
+	int player1_hp, player2_hp;
+	int player1_x, player1_y;
+	int player2_x, player2_y;
+	struct player_card_order p1;
+	struct player_card_order p2;
+	player1_temp_choice = player1_choice;
+	player2_temp_choice = player2_choice;
+
+	set_hp(player1_choice, player2_choice, &player1_hp, &player2_hp);
+	PrintHp(player1_hp, player2_hp);
+
+	//플레이어 처음 위치값 넣기
+	player1_x = 12;
+	player1_y = 4;
+	player2_x = 12;
+	player2_y = 28;
+
+	while (1)
+	{
+		cards_choice(&(p1.first_card), &(p1.second_card), &(p1.third_card), PLAYER1NUMBER, player1_choice);
+		cards_choice(&(p2.first_card), &(p2.second_card), &(p2.third_card), PLAYER2NUMBER, player2_choice);
+		cardblank();
+
+		pause();
+
+		//첫 번째 라운드
+		PrintBattleCard(player1_choice, player2_choice, p1.first_card, p2.first_card);
+		pause();
+		card_order(p1.first_card, p2.first_card, &player1_x, &player1_y, &player2_x, &player2_y, player1_choice, player2_choice, &player1_hp, &player2_hp);
+		pause();
+		cardblank();
+
+		//두 번째 라운드
+		PrintBattleCard(player1_choice, player2_choice, p1.second_card, p2.second_card);
+		pause();
+		card_order(p1.second_card, p2.second_card, &player1_x, &player1_y, &player2_x, &player2_y, player1_choice, player2_choice, &player1_hp, &player2_hp);
+		pause();
+		cardblank();
+
+		//세 번째 라운드
+		PrintBattleCard(player1_choice, player2_choice, p1.third_card, p2.third_card);
+		pause();
+		card_order(p1.third_card, p2.third_card, &player1_x, &player1_y, &player2_x, &player2_y, player1_choice, player2_choice, &player1_hp, &player2_hp);
+		pause();
+		cardblank();
+	}
+}
+
+//카드 순서 체크와 카드의 종류를 확인하는 함수
+int card_order(int p1_card, int p2_card, int *player1_x, int *player1_y, int *player2_x, int *player2_y, int player1_choice, int player2_choice, int *player1_hp, int *player2_hp)
+{
+	if ((check_attack_card(p1_card) && check_move_card(p2_card)) ||
+		(check_attack_card(p1_card) && check_guard_card(p2_card)) ||
+		(check_guard_card(p1_card) && check_attack_card(p2_card)))
+	{
+		check_card(p2_card, player2_x, player2_y, player2_choice, PLAYER2NUMBER, player1_hp, player2_hp, p1_card);
+		pause();
+		check_card(p1_card, player1_x, player1_y, player1_choice, PLAYER1NUMBER, player1_hp, player2_hp, p2_card);
+	}
+	else
+	{
+		check_card(p1_card, player1_x, player1_y, player1_choice, PLAYER1NUMBER, player1_hp, player2_hp, p2_card);
+		pause();
+		check_card(p2_card, player2_x, player2_y, player2_choice, PLAYER2NUMBER, player1_hp, player2_hp, p1_card);
+	}
+}
+int check_card(int card, int *player_x, int *player_y, int player_choice, int player_number, int *player1_hp, int *player2_hp, int enemy_card)
+{
+	if (card >= 1 && card <= 4) //이동 스킬
+	{
+		move_card(card, player_x, player_y, player_choice, player_number);
+	}
+	else if (card >= 5 && card <= 7) //공격 스킬
+	{
+		if (player_choice == SPIDER_NUMBER) //거미 일때
+		{
+			spider_attack_card(card, *player_x, *player_y, player_number, player1_hp, player2_hp, enemy_card);
+		}
+		else if (player_choice == RABBIT_NUMBER)
+		{
+			rabbit_attack_card(card, *player_x, *player_y, player_number, player1_hp, player2_hp, enemy_card);
+		}
+		else
+		{
+			bird_attack_card(card, *player_x, *player_y, player_number, player1_hp, player2_hp, enemy_card);
+		}
+		if (*player1_hp <= 0)////////////////////////
+		{
+			system("cls");
+			p2_win(10, 10);
+			gotoxy(24, 48);
+			exit(1);
+		}
+		if (*player2_hp <= 0)
+		{
+			system("cls");
+			p1_win(10, 10);
+			gotoxy(24, 48);
+			exit(1);
+		}
+		PrintHp(*player1_hp, *player2_hp);
+	}
+	else
+	{
+		if (player_number == PLAYER1NUMBER)
+			skill8_effect(*player_x, *player_y, player1_temp_choice);
+		else
+			skill8_effect(*player_x, *player_y, player2_temp_choice);
+	}
+}
+int check_move_card(int card_number)
+{
+	if (card_number >= 1 && card_number <= 4)
+		return 1;
+	else
+		return 0;
+}
+int check_attack_card(int card_number)
+{
+	if (card_number >= 5 && card_number <= 7)
+		return 1;
+	else
+		return 0;
+}
+int check_guard_card(int card_number)
+{
+	if (card_number == 8)
+		return 1;
+	else
+		return 0;
+}
+
+//공격할 때 상대방 위치확인하는 함수들
+int check_left_up(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (x - 8 > 3 && y - 8 > 3 && map[x - 8][y - 8] == PLAYER2NUMBER);
+	else
+		return (x - 8 > 3 && y - 8 > 3 && map[x - 8][y - 8] == PLAYER1NUMBER);
+}
+int check_up(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (x - 8 > 3 && map[x - 8][y] == PLAYER2NUMBER);
+	else
+		return (x - 8 > 3 && map[x - 8][y] == PLAYER1NUMBER);
+}
+int check_right_up(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (x - 8 > 3 && y + 8 < 29 && map[x - 8][y + 8] == PLAYER2NUMBER);
+	else
+		return (x - 8 > 3 && y + 8 < 29 && map[x - 8][y + 8] == PLAYER1NUMBER);
+}
+int check_left(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (y - 8 > 3 && map[x][y - 8] == PLAYER2NUMBER);
+	else
+		return (y - 8 > 3 && map[x][y - 8] == PLAYER1NUMBER);
+}
+int check_right(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (y + 8 < 29 && map[x][y + 8] == PLAYER2NUMBER);
+	else
+		return (y + 8 < 29 && map[x][y + 8] == PLAYER1NUMBER);
+}
+int check_left_down(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (x + 8 < 21 && y - 8 > 3 && map[x + 8][y - 8] == PLAYER2NUMBER);
+	else
+		return (x + 8 < 21 && y - 8 > 3 && map[x + 8][y - 8] == PLAYER1NUMBER);
+}
+int check_down(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (x + 8 < 21 && map[x + 8][y] == PLAYER2NUMBER);
+	else
+		return (x + 8 < 21 && map[x + 8][y] == PLAYER1NUMBER);
+}
+int check_right_down(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		return (x + 8 < 21 && y + 8 < 29 && map[x + 8][y + 8] == PLAYER2NUMBER);
+	else
+		return (x + 8 < 21 && y + 8 < 29 && map[x + 8][y + 8] == PLAYER1NUMBER);
+}
+int reduce_hp(int player_number, int damage, int *player1_hp, int *player2_hp, int enemy_card)
+{
+	if (enemy_card == GUA)
+		damage = damage - 15;
+
+	if (player_number == PLAYER1NUMBER)
+		*player2_hp = *player2_hp - damage;
+	else
+		*player1_hp = *player1_hp - damage;
+}
+int heal_hp(int player_number, int heal, int *player1_hp, int *player2_hp)
+{
+	if (player_number == PLAYER1NUMBER)
+	{
+		if (*player1_hp <= 90)
+			*player1_hp = *player1_hp + heal;
+		else if (*player1_hp == 95)
+			*player1_hp = 100;
+	}
+	else
+	{
+		if (*player2_hp <= 90)
+			*player2_hp = *player2_hp + heal;
+		else if (*player2_hp == 95)
+			*player2_hp = 100;
+	}
+}
+
+//이동과 공격카드일 경우 해야할 함수들
+int move_card(int card_number, int *x, int *y, int character, int player_number)
+{
+	switch (card_number)
+	{
+	case MR: //오른쪽으로 움직이는 함수
+		if (*y + 8 < 29 && map[*x][*y + 8] == 0)
+		{
+			blank(*x, *y);
+			map[*x][*y] = 0;//기존에 있던 player number 초기화
+			input_player_number(*x, *y + 8, player_number);//움직일 칸에 player number 추가
+
+			if (character == SPIDER_NUMBER)
+			{
+				print_spider(*x, *y + 8);
+			}
+			else if (character == RABBIT_NUMBER)
+			{
+				print_rabbit(*x, *y + 8);
+			}
+			else //(character == BIRD_NUMBER)
+			{
+				print_bird(*x, *y + 8);
+			}
+			*y = *y + 8;
+		}
+		break;
+	case ML: //왼쪽으로 움직이는 함수
+		if (*y - 8 > 3 && map[*x][*y - 8] == 0)
+		{
+			blank(*x, *y);
+			map[*x][*y] = 0;
+			input_player_number(*x, *y - 8, player_number);
+
+			if (character == SPIDER_NUMBER)
+			{
+				print_spider(*x, *y - 8);
+			}
+			else if (character == RABBIT_NUMBER)
+			{
+				print_rabbit(*x, *y - 8);
+			}
+			else //(character == BIRD_NUMBER)
+			{
+				print_bird(*x, *y - 8);
+			}
+			*y = *y - 8;
+		}
+		break;
+	case MU: //위쪽으로 움직이는 함수
+		if (*x - 8 > 3 && map[*x - 8][*y] == 0)
+		{
+			blank(*x, *y);
+			map[*x][*y] = 0;
+			input_player_number(*x - 8, *y, player_number);
+
+			if (character == SPIDER_NUMBER)
+			{
+				print_spider(*x - 8, *y);
+			}
+			else if (character == RABBIT_NUMBER)
+			{
+				print_rabbit(*x - 8, *y);
+			}
+			else //(character == BIRD_NUMBER)
+			{
+				print_bird(*x - 8, *y);
+			}
+			*x = *x - 8;
+		}
+		break;
+	case MD: //아래쪽으로 움직이는 카드
+		if (*x + 8 < 21 && map[*x + 8][*y] == 0)
+		{
+			blank(*x, *y);
+			map[*x][*y] = 0;
+			input_player_number(*x + 8, *y, player_number);
+
+			if (character == SPIDER_NUMBER)
+			{
+				print_spider(*x + 8, *y);
+			}
+			else if (character == RABBIT_NUMBER)
+			{
+				print_rabbit(*x + 8, *y);
+			}
+			else //(character == BIRD_NUMBER)
+			{
+				print_bird(*x + 8, *y);
+			}
+			*x = *x + 8;
+		}
+		break;
+	}
+}
+int input_player_number(int x, int y, int player_number)
+{
+	if (player_number == PLAYER1NUMBER)
+		map[x][y] = -1;
+	else
+		map[x][y] = -2;
+}
+int spider_attack_card(int card_number, int spider_x, int spider_y, int player_number, int *player1_hp, int *player2_hp, int enemy_card)
+{
+	switch (card_number)
+	{
+	case SK1://좌상, 우상, 좌, 우 확인
+		if (check_left_up(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_up(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if(player_number == PLAYER1NUMBER)
+			spider_skill1_effect(spider_x, spider_y, player2_temp_choice);
+		else
+			spider_skill1_effect(spider_x, spider_y, player1_temp_choice);
+		break;
+	case SK2://8칸 다 확인
+		if (check_left_up(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_up(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_up(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left_down(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_down(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_down(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if (player_number == PLAYER1NUMBER)
+			spider_skill2_effect(spider_x, spider_y, player2_temp_choice);
+		else
+			spider_skill2_effect(spider_x, spider_y, player1_temp_choice);
+		break;
+	case SK3://좌상, 우상, 좌하, 우하 확인
+		if (check_left_up(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_up(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left_down(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_down(spider_x, spider_y, player_number))
+			reduce_hp(player_number, SPIDER_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if (player_number == PLAYER1NUMBER)
+			spider_skill3_effect(spider_x, spider_y, player2_temp_choice);
+		else
+			spider_skill3_effect(spider_x, spider_y, player1_temp_choice);
+		break;
+	}
+
+}
+int rabbit_attack_card(int card_number, int rabbit_x, int rabbit_y, int player_number, int *player1_hp, int *player2_hp, int enemy_card)
+{
+	switch (card_number)
+	{
+	case SK1:
+		heal_hp(player_number, RABBIT_SKILL1_HEAL, player1_hp, player2_hp);
+		rabbit_skill1_effect(rabbit_x, rabbit_y);
+		break;
+	case SK2:
+		if (check_left_up(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_up(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left_down(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_down(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if (player_number == PLAYER1NUMBER)
+			rabbit_skill2_effect(rabbit_x, rabbit_y, player2_temp_choice);
+		else
+			rabbit_skill2_effect(rabbit_x, rabbit_y, player1_temp_choice);
+		break;
+	case SK3:
+		if (check_up(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_down(rabbit_x, rabbit_y, player_number))
+			reduce_hp(player_number, RABBIT_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if (player_number == PLAYER1NUMBER)
+			rabbit_skill3_effect(rabbit_x, rabbit_y, player2_temp_choice);
+		else
+			rabbit_skill3_effect(rabbit_x, rabbit_y, player1_temp_choice);
+		break;
+	}
+}
+int bird_attack_card(int card_number, int bird_x, int bird_y, int player_number, int *player1_hp, int *player2_hp, int enemy_card)
+{
+	switch (card_number)
+	{
+	case SK1:
+		if (check_left(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left_down(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_down(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL1_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if (player_number == PLAYER1NUMBER)
+			bird_skill1_effect(bird_x, bird_y, player2_temp_choice);
+		else
+			bird_skill1_effect(bird_x, bird_y, player1_temp_choice);
+		break;
+	case SK2:
+		if (check_left_up(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_up(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_up(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_down(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_down(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left_down(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL2_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if (player_number == PLAYER1NUMBER)
+			bird_skill2_effect(bird_x, bird_y, player2_temp_choice);
+		else
+			bird_skill2_effect(bird_x, bird_y, player1_temp_choice);
+		break;
+	case SK3:
+		if (check_left_up(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_up(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_left(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right_down(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_down(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		else if (check_right(bird_x, bird_y, player_number))
+			reduce_hp(player_number, BIRD_SKILL3_DAMAGE, player1_hp, player2_hp, enemy_card);
+		if (player_number == PLAYER1NUMBER)
+			bird_skill3_effect(bird_x, bird_y, player2_temp_choice);
+		else
+			bird_skill3_effect(bird_x, bird_y, player1_temp_choice);
+		break;
+	}
+}
+
+//blank는 한 칸 비우기, cardblank는 맵 옆에 빈 공간 지우기, 그 외는 캐릭터 출력
+int blank(int x, int y)//7x7한칸을 전부 비우기
+{
+	int x1 = y - 3;
+	int y1 = x - 3;
+	gotoxy(x1, y1);
+	printf("       ");
+	gotoxy(x1, y1 + 1);
+	printf("       ");
+	gotoxy(x1, y1 + 2);
+	printf("       ");
+	gotoxy(x1, y1 + 3);
+	printf("       ");
+	gotoxy(x1, y1 + 4);
+	printf("       ");
+	gotoxy(x1, y1 + 5);
+	printf("       ");
+	gotoxy(x1, y1 + 6);
+	printf("       ");
+}
+int cardblank()
+{
+	for (int i = 0; i < 25; i++)
+	{
+		gotoxy(PRINTCARD_X, PRINTCARD_Y + i);
+		printf("                                                                              ");
+	}
+}
+int print_spider(int x, int y)
+{
+	int x1 = y - 3;
+	int y1 = x - 1;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(x1, y1);
+	printf("   _  \n");
+	gotoxy(x1, y1 + 1);
+	printf("_\\( )/_\n");
+	gotoxy(x1, y1 + 2);
+	printf(" /(O)\\\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int print_rabbit(int x, int y)
+{
+	int x1 = y - 2;
+	int y1 = x - 1;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(x1, y1);
+	printf("  //\n");
+	gotoxy(x1, y1 + 1);
+	printf(" ('>\n");
+	gotoxy(x1, y1 + 2);
+	printf(" /rr\n");
+	gotoxy(x1, y1 + 3);
+	printf("*\))_\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int print_bird(int x, int y)
+{
+	int x1 = y - 3;
+	int y1 = x - 1;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(x1, y1);
+	printf("  ,_,\n");
+	gotoxy(x1, y1 + 1);
+	printf(" (O,O)\n");
+	gotoxy(x1, y1 + 2);
+	printf(" (   )\n");
+	gotoxy(x1, y1 + 3);
+	printf("-\" - \"-\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+//맵을 출력하는 함수와 카드 모습을 출력하는 함수들
+int PrintMap()
+{
+	for (int i = 0; i < 25; i++)
+	{
+		for (int j = 0; j < 33; j++)
+		{
+			if (map[i][j] <= 0)
+				printf(" ");
+			else
+				printf("%c", map[i][j]);
+		}
+		printf("\n");
+	}
+}
+int PrintFirstMap(int player1_choice, int player2_choice)
+{
+	system("cls");
+	gotoxy(0, 0);
+	PrintMap();
+	switch (player1_choice)
+	{
+	case SPIDER_NUMBER:
+		print_spider(12, 4);
+		break;
+	case RABBIT_NUMBER:
+		print_rabbit(12, 4);
+		break;
+	case BIRD_NUMBER:
+		print_bird(12, 4);
+		break;
+	}
+
+	switch (player2_choice)
+	{
+	case SPIDER_NUMBER:
+		print_spider(12, 28);
+		break;
+	case RABBIT_NUMBER:
+		print_rabbit(12, 28);
+		break;
+	case BIRD_NUMBER:
+		print_bird(12, 28);
+		break;
+	}
+
+	map[12][4] = PLAYER1NUMBER;
+	map[12][28] = PLAYER2NUMBER;
+}
+//   ↓↓↓↓ PrintMoveCard 
+int PrintCard(int card_number, int x, int y)
+{
+	switch (card_number)
+	{
+	case MR:
+		PrintRight(x, y);
+		break;
+	case ML:
+		PrintLeft(x, y);
+		break;
+	case MU:
+		PrintUp(x, y);
+		break;
+	case MD:
+		PrintDown(x, y);
+		break;
+	}
+}
+int PrintSpiderCard(int card_number, int x, int y)
+{
+	switch (card_number)
+	{
+	case SK1:
+		attack_spider_surprise_attack(x, y);
+		break;
+	case SK2:
+		attack_spider_web(x, y);
+		break;
+	case SK3:
+		attack_spider_spear(x, y);
+		break;
+	}
+}
+int PrintRabbitCard(int card_number, int x, int y)
+{
+	switch (card_number)
+	{
+	case SK1:
+		attack_rabbit_eat_carrot(x, y);
+		break;
+	case SK2:
+		attack_rabbit_tooth_scraping(x, y);
+		break;
+	case SK3:
+		attack_rabbit_Tunnel_digging(x, y);
+		break;
+	}
+}
+int PrintBirdCard(int card_number, int x, int y)
+{
+	switch (card_number)
+	{
+	case SK1:
+		attack_bird_descent_attack(x, y);
+		break;
+	case SK2:
+		attack_bird_wing_wind(x, y);
+		break;
+	case SK3:
+		attack_bird_piercer(x, y);
+		break;
+	}
+}
+int PrintGuardCard(int x, int y)
+{
+	shiledcard(x, y);
+}
+
+int PrintRight(int x, int y)
+{
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 1.             │\n");
+	gotoxy(x, y + 2);
+	printf("│                │\n");
+	gotoxy(x, y + 3);
+	printf("│                │\n");
+	gotoxy(x, y + 4);
+	printf("│        ▶      │\n");
+	gotoxy(x, y + 5);
+	printf("│        ▶▶    │\n");
+	gotoxy(x, y + 6);
+	printf("│  ■■■▶▶▶  │\n");
+	gotoxy(x, y + 7);
+	printf("│        ▶▶    │\n");
+	gotoxy(x, y + 8);
+	printf("│        ▶      │\n");
+	gotoxy(x, y + 9);
+	printf("│                │\n");
+	gotoxy(x, y + 10);
+	printf("│                │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+
+}
+int PrintLeft(int x, int y)
+{
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 2.             │\n");
+	gotoxy(x, y + 2);
+	printf("│                │\n");
+	gotoxy(x, y + 3);
+	printf("│                │\n");
+	gotoxy(x, y + 4);
+	printf("│      ◀        │\n");
+	gotoxy(x, y + 5);
+	printf("│    ◀◀        │\n");
+	gotoxy(x, y + 6);
+	printf("│  ◀◀◀■■■  │\n");
+	gotoxy(x, y + 7);
+	printf("│    ◀◀        │\n");
+	gotoxy(x, y + 8);
+	printf("│      ◀        │\n");
+	gotoxy(x, y + 9);
+	printf("│                │\n");
+	gotoxy(x, y + 10);
+	printf("│                │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+
+}
+int PrintUp(int x, int y)
+{
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 3.             │\n");
+	gotoxy(x, y + 2);
+	printf("│       ▲       │\n");
+	gotoxy(x, y + 3);
+	printf("│      ▲▲      │\n");
+	gotoxy(x, y + 4);
+	printf("│     ▲▲▲     │\n");
+	gotoxy(x, y + 5);
+	printf("│    ▲▲▲▲    │\n");
+	gotoxy(x, y + 6);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 7);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 8);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 9);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 10);
+	printf("│                │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+
+}
+int PrintDown(int x, int y)
+{
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 4.             │\n");
+	gotoxy(x, y + 2);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 3);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 4);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 5);
+	printf("│      ■■      │\n");
+	gotoxy(x, y + 6);
+	printf("│    ▼▼▼▼    │\n");
+	gotoxy(x, y + 7);
+	printf("│     ▼▼▼     │\n");
+	gotoxy(x, y + 8);
+	printf("│      ▼▼      │\n");
+	gotoxy(x, y + 9);
+	printf("│       ▼       │\n");
+	gotoxy(x, y + 10);
+	printf("│                │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+
+}
+
+int attack_spider_surprise_attack(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 5.   / _ \\     │\n");
+	gotoxy(x, y + 2);
+	printf("│    \\_\\(_)/_/   │\n");
+	gotoxy(x, y + 3);
+	printf("│     _//o\\\\_    │\n");
+	gotoxy(x, y + 4);
+	printf("│      /   \\     │\n");
+	gotoxy(x, y + 5);
+	printf("│     ││  ││     │\n");
+	gotoxy(x, y + 6);
+	printf("│       ㅇ       │\n");
+	gotoxy(x, y + 7);
+	printf("│       ㅁ       │\n");
+	gotoxy(x, y + 8);
+	printf("│ ■□■   dmg:%d│\n", SPIDER_SKILL1_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 10);
+	printf("│ □□□         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+}
+int attack_spider_web(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 6.   _____     │\n");
+	gotoxy(x, y + 2);
+	printf("│  `..'\\ _ /`.,' │\n");
+	gotoxy(x, y + 3);
+	printf("│   /`.,' `.,'\\  │\n");
+	gotoxy(x, y + 4);
+	printf("│ _/__/     \\__\\_│\n");
+	gotoxy(x, y + 5);
+	printf("│  \\  \\     /  / │\n");
+	gotoxy(x, y + 6);
+	printf("│   \\,'`._,'`./  │\n");
+	gotoxy(x, y + 7);
+	printf("│  ,'`./___\\,'`. │\n");
+	gotoxy(x, y + 8);
+	printf("│ ■■■   dmg:%d│\n", SPIDER_SKILL2_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 10);
+	printf("│ ■■■         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+}
+int attack_spider_spear(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 7.     A       │\n");
+	gotoxy(x, y + 2);
+	printf("│       /!\\      │\n");
+	gotoxy(x, y + 3);
+	printf("│      / ! \\     │\n");
+	gotoxy(x, y + 4);
+	printf("│      )___(     │\n");
+	gotoxy(x, y + 5);
+	printf("│       (_)      │\n");
+	gotoxy(x, y + 6);
+	printf("│      ,| |      │\n");
+	gotoxy(x, y + 7);
+	printf("│     .,| |      │\n");
+	gotoxy(x, y + 8);
+	printf("│ ■□■   dmg:%d│\n", SPIDER_SKILL3_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ □□□         │\n");
+	gotoxy(x, y + 10);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+}
+
+int attack_rabbit_eat_carrot(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 5.   _         │\n");
+	gotoxy(x, y + 2);
+	printf("│    _| |_       │\n");
+	gotoxy(x, y + 3);
+	printf("│   |_   _|      │\n");
+	gotoxy(x, y + 4);
+	printf("│     |_|    _   │\n");
+	gotoxy(x, y + 5);
+	printf("│          _| |_ │\n");
+	gotoxy(x, y + 6);
+	printf("│         |_   _|│\n");
+	gotoxy(x, y + 7);
+	printf("│           |_|  │\n");
+	gotoxy(x, y + 8);
+	printf("│ hp healing %d  │\n", RABBIT_SKILL1_HEAL);
+	gotoxy(x, y + 9);
+	printf("│                │\n");
+	gotoxy(x, y + 10);
+	printf("│                │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+}
+int attack_rabbit_tooth_scraping(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 6. \\  ___  /   │\n");
+	gotoxy(x, y + 2);
+	printf("│     \\ \\_/ /    │\n");
+	gotoxy(x, y + 3);
+	printf("│ -----  |  -----│\n");
+	gotoxy(x, y + 4);
+	printf("│    \\__/|\\__/   │\n");
+	gotoxy(x, y + 5);
+	printf("│      | | |     │\n");
+	gotoxy(x, y + 6);
+	printf("│      | | |     │\n");
+	gotoxy(x, y + 7);
+	printf("│      |_|_|     │\n");
+	gotoxy(x, y + 8);
+	printf("│ ■□■  dmg:%d │\n", RABBIT_SKILL2_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 10);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int attack_rabbit_Tunnel_digging(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 7._        ____│\n");
+	gotoxy(x, y + 2);
+	printf("│   |       |    │\n");
+	gotoxy(x, y + 3);
+	printf("│   |    // |    │\n");
+	gotoxy(x, y + 4);
+	printf("│   |   ('> |    │\n");
+	gotoxy(x, y + 5);
+	printf("│   |   /rr |    │\n");
+	gotoxy(x, y + 6);
+	printf("│   | *\\))_ |    │\n");
+	gotoxy(x, y + 7);
+	printf("│   `-------'    │\n");
+	gotoxy(x, y + 8);
+	printf("│ □■□  dmg:%d │\n", RABBIT_SKILL3_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 10);
+	printf("│ □■□         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int attack_bird_descent_attack(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 5.`.   _ _     │\n");
+	gotoxy(x, y + 2);
+	printf("│__;_ \\ /,//`    │\n");
+	gotoxy(x, y + 3);
+	printf("│--, `._) (  __  │\n");
+	gotoxy(x, y + 4);
+	printf("│ '//,,,  |_/(/  │\n");
+	gotoxy(x, y + 5);
+	printf("│      )_7""q`| >  │\n");
+	gotoxy(x, y + 6);
+	printf("│     /_|        │\n");
+	gotoxy(x, y + 7);
+	printf("│                │\n");
+	gotoxy(x, y + 8);
+	printf("│ □□□   dmg:%d│\n", BIRD_SKILL1_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 10);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int attack_bird_wing_wind(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 6._-_-_-_---   │\n");
+	gotoxy(x, y + 2);
+	printf("│   -_-_-_       │\n");
+	gotoxy(x, y + 3);
+	printf("│    -_-_-       │\n");
+	gotoxy(x, y + 4);
+	printf("│     -__-       │\n");
+	gotoxy(x, y + 5);
+	printf("│    _-_         │\n");
+	gotoxy(x, y + 6);
+	printf("│   _-           │\n");
+	gotoxy(x, y + 7);
+	printf("│   -_           │\n");
+	gotoxy(x, y + 8);
+	printf("│ ■■■   dmg:%d│\n", BIRD_SKILL2_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ □□□         │\n");
+	gotoxy(x, y + 10);
+	printf("│ ■■■         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int attack_bird_piercer(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 7.   ( cloud ) │\n");
+	gotoxy(x, y + 2);
+	printf("│-wall-_/  /-----│\n");
+	gotoxy(x, y + 3);
+	printf("│     / __/      │\n");
+	gotoxy(x, y + 4);
+	printf("│   _/ /         │\n");
+	gotoxy(x, y + 5);
+	printf("│  /__/          │\n");
+	gotoxy(x, y + 6);
+	printf("│ //             │\n");
+	gotoxy(x, y + 7);
+	printf("│/'              │\n");
+	gotoxy(x, y + 8);
+	printf("│ ■■□   dmg:%d│\n", BIRD_SKILL3_DAMAGE);
+	gotoxy(x, y + 9);
+	printf("│ ■□■         │\n");
+	gotoxy(x, y + 10);
+	printf("│ □■■         │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int shiledcard(int x, int y) {
+	gotoxy(x, y);
+	printf("┌────────────────┐\n");
+	gotoxy(x, y + 1);
+	printf("│ 8.|`-._/\\_.-`| │\n");
+	gotoxy(x, y + 2);
+	printf("│   |    ||    | │\n");
+	gotoxy(x, y + 3);
+	printf("│   |___o()o___| │\n");
+	gotoxy(x, y + 4);
+	printf("│   |__((<>))__| │\n");
+	gotoxy(x, y + 5);
+	printf("│   \\   o\/o    / │\n");
+	gotoxy(x, y + 6);
+	printf("│    \\   ||   /  │\n");
+	gotoxy(x, y + 7);
+	printf("│     \\  ||  /   │\n");
+	gotoxy(x, y + 8);
+	printf("│      '.||.'    │\n");
+	gotoxy(x, y + 9);
+	printf("│        ``      │\n");
+	gotoxy(x, y + 10);
+	printf("│   dmg - 15     │\n");
+	gotoxy(x, y + 11);
+	printf("└────────────────┘\n");
+
+}
+
+//전투 중 나오는 카드와 플레이어 번호를 출력, hp출력
+int PrintBattleCard(int player1_choice, int player2_choice, int p1_card, int p2_card)
+{
+	p1(PRINTCARD_X + 13, PRINTCARD_Y);
+	p2(PRINTCARD_X + 43, PRINTCARD_Y);
+	if (check_move_card(p1_card) == 1)
+		PrintCard(p1_card, PRINTCARD_X + 12, PRINTCARD_Y + 7);
+	else if (check_attack_card(p1_card) == 1)
+	{
+		if (player1_choice == SPIDER_NUMBER)
+			PrintSpiderCard(p1_card, PRINTCARD_X + 12, PRINTCARD_Y + 7);
+		else if (player1_choice == RABBIT_NUMBER)
+			PrintRabbitCard(p1_card, PRINTCARD_X + 12, PRINTCARD_Y + 7);
+		else
+			PrintBirdCard(p1_card, PRINTCARD_X + 12, PRINTCARD_Y + 7);
+	}
+	else if (check_guard_card(p1_card) == 1)
+		PrintGuardCard(PRINTCARD_X + 12, PRINTCARD_Y + 7);
+
+	if (check_move_card(p2_card) == 1)
+		PrintCard(p2_card, PRINTCARD_X + 42, PRINTCARD_Y + 7);
+	else if (check_attack_card(p2_card) == 1)
+	{
+		if (player2_choice == SPIDER_NUMBER)
+			PrintSpiderCard(p2_card, PRINTCARD_X + 42, PRINTCARD_Y + 7);
+		else if (player2_choice == RABBIT_NUMBER)
+			PrintRabbitCard(p2_card, PRINTCARD_X + 42, PRINTCARD_Y + 7);
+		else
+			PrintBirdCard(p2_card, PRINTCARD_X + 42, PRINTCARD_Y + 7);
+	}
+	else if (check_guard_card(p2_card) == 1)
+		PrintGuardCard(PRINTCARD_X + 42, PRINTCARD_Y + 7);
+}
+int p1(int x, int y) {
+	gotoxy(x, y);
+	printf(".______    __  \n");
+	gotoxy(x, y + 1);
+	printf("|   _  \  /_ | \n");
+	gotoxy(x, y + 2);
+	printf("|  |_)  |  | | \n");
+	gotoxy(x, y + 3);
+	printf("|   ___/   | | \n");
+	gotoxy(x, y + 4);
+	printf("|  |       | | \n");
+	gotoxy(x, y + 5);
+	printf("| _|       |_| \n");
+
+}
+int p2(int x, int y) {
+	gotoxy(x, y);
+	printf(".______    ___   ");
+	gotoxy(x, y + 1);
+	printf("|   _  \  |__ \  ");
+	gotoxy(x, y + 2);
+	printf("|  |_)  |    ) | ");
+	gotoxy(x, y + 3);
+	printf("|   ___/    / /  ");
+	gotoxy(x, y + 4);
+	printf("|  |       / /_  ");
+	gotoxy(x, y + 5);
+	printf("| _|      |____| ");
+
+}
+int PrintHp(int player1_hp, int player2_hp)
+{
+	gotoxy(2, 26);
+	printf("                                                                       ");
+	gotoxy(2, 27);
+	printf("                                                                       ");
+	gotoxy(2, 26);
+	printf("p1 hp:%d ", player1_hp);
+	gotoxy(13, 26);
+	for (int i = 0; i < player1_hp / 5; i++)
+	{
+		printf("■");
+	}
+	gotoxy(2, 27);
+	printf("p2 hp:%d ", player2_hp);
+	gotoxy(13, 27);
+	for (int i = 0; i < player2_hp / 5; i++)
+	{
+		printf("■");
+	}
+}
+
+//게임 화면에서 필요한 함수들
+int Mainmenu()
+{
+	int input;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+	char_b(10, 10);
+	char_e(20, 10);
+	char_a(30, 10);
+	char_s(43, 10);
+	char_t(56, 10);
+	char_a(69, 10);
+	char_r(82, 10);
+	char_d(95, 10);
+	system("cls");
+	Sleep(DELAYTIME);
+	char_all(10, 10);
+	Sleep(DELAYTIME + 100);
+	system("cls");
+	Sleep(DELAYTIME);
+	char_all(10, 10);
+	Sleep(DELAYTIME + 100);
+	system("cls");
+	Sleep(DELAYTIME);
+	char_all(10, 10);
+	Sleep(DELAYTIME + 100);
+	system("cls");
+	Sleep(DELAYTIME);
+	char_all(10, 10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	char_start();
+	// x 10씩 차이남
+}
+int GameClose(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+	gotoxy(x, y);
+	printf("  _______      ___      .___  ___.  _______      ______  __        ______        _______. _______ ");
+	gotoxy(x, y + 1);
+	printf(" /  _____|    /   \\     |   \\/   | |   ____|    /      ||  |      /  __  \\      /       ||   ____|");
+	gotoxy(x, y + 2);
+	printf("|  |  __     /  ^  \\    |  \\  /  | |  |__      |  ,----'|  |     |  |  |  |    |   (----`|  |__   ");
+	gotoxy(x, y + 3);
+	printf("|  | |_ |   /  /_\\  \\   |  |\\/|  | |   __|     |  |     |  |     |  |  |  |     \\   \\    |   __|  ");
+	gotoxy(x, y + 4);
+	printf("|  |__| |  /  _____ \\   |  |  |  | |  |____    |  `----.|  `----.|  `--'  | .----)   |   |  |____ ");
+	gotoxy(x, y + 5);
+	printf(" \\______| /__/     \__\\  |__|  |__| |_______|   \\ \______||_______| \\______/  |_______/    |_______|");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int char_b(int x, int y) {
+	int i = DELAYTIME;
+	Sleep(i);
+	gotoxy(x, y);
+	printf(".______ ");
+	Sleep(i);
+	gotoxy(x, y + 1);
+	printf("|   _  ＼");
+	Sleep(i);
+	gotoxy(x, y + 2);
+	printf("|  |_)  |");
+	Sleep(i);
+	gotoxy(x, y + 3);
+	printf("|   _  < ");
+	Sleep(i);
+	gotoxy(x, y + 4);
+	printf("|  |_)  |");
+	Sleep(i);
+	gotoxy(x, y + 5);
+	printf("|______/ ");
+	// 40 , 10
+}
+int char_e(int x, int y) {
+	int i = DELAYTIME;
+	Sleep(i);
+	gotoxy(x, y);
+	printf(" _______ ");
+	Sleep(i);
+	gotoxy(x, y + 1);
+	printf("|   ____|");
+	Sleep(i);
+	gotoxy(x, y + 2);
+	printf("|  |__   ");
+	Sleep(i);
+	gotoxy(x, y + 3);
+	printf("|   __|  ");
+	Sleep(i);
+	gotoxy(x, y + 4);
+	printf("|  |____ ");
+	Sleep(i);
+	gotoxy(x, y + 5);
+	printf("|_______|");
+	// 50 , 10
+}
+int char_a(int x, int y) {
+	// 60 , 10
+	int i = DELAYTIME;
+	Sleep(i);
+	gotoxy(x, y);
+	printf("     ___      ");
+	Sleep(i);
+	gotoxy(x, y + 1);
+	printf("    /   \\     ");
+	Sleep(i);
+	gotoxy(x, y + 2);
+	printf("   /  ^  \\    ");
+	Sleep(i);
+	gotoxy(x, y + 3);
+	printf("  /  /_\\  \\   ");
+	Sleep(i);
+	gotoxy(x, y + 4);
+	printf(" /  _____  \\  ");
+	Sleep(i);
+	gotoxy(x, y + 5);
+	printf("/__/     \\__\\ ");
+
+}
+int char_s(int x, int y) {
+	// 55 , 10
+	int i = DELAYTIME;
+	Sleep(i);
+	gotoxy(x, y);
+	printf("     _______.");
+	Sleep(i);
+	gotoxy(x, y + 1);
+	printf("    /       |");
+	Sleep(i);
+	gotoxy(x, y + 2);
+	printf("   |   (----`");
+	Sleep(i);
+	gotoxy(x, y + 3);
+	printf("    \   \    ");
+	Sleep(i);
+	gotoxy(x, y + 4);
+	printf(".----)   |   ");
+	Sleep(i);
+	gotoxy(x, y + 5);
+	printf("|_______/    ");
+
+}
+int char_t(int x, int y) {
+	// 55 , 10
+	int i = DELAYTIME;
+	Sleep(i);
+	gotoxy(x, y);
+	printf(".___________.");
+	Sleep(i);
+	gotoxy(x, y + 1);
+	printf("|           |");
+	Sleep(i);
+	gotoxy(x, y + 2);
+	printf("`---|  |----`");
+	Sleep(i);
+	gotoxy(x, y + 3);
+	printf("    |  |     ");
+	Sleep(i);
+	gotoxy(x, y + 4);
+	printf("    |  |     ");
+	Sleep(i);
+	gotoxy(x, y + 5);
+	printf("    |__|     ");
+
+}
+int char_r(int x, int y) {
+	// 55 , 10
+	int i = DELAYTIME;
+	Sleep(i);
+	gotoxy(x, y);
+	printf(".______      ");
+	Sleep(i);
+	gotoxy(x, y + 1);
+	printf("|   _  \     ");
+	Sleep(i);
+	gotoxy(x, y + 2);
+	printf("|  |_)  |    ");
+	Sleep(i);
+	gotoxy(x, y + 3);
+	printf("|      /     ");
+	Sleep(i);
+	gotoxy(x, y + 4);
+	printf("|  |\  \----.");
+	Sleep(i);
+	gotoxy(x, y + 5);
+	printf("| _| `._____|");
+
+}
+int char_d(int x, int y) {
+	// 55 , 10
+	int i = DELAYTIME;
+	Sleep(i);
+	gotoxy(x, y);
+	printf(" _______  ");
+	Sleep(i);
+	gotoxy(x, y + 1);
+	printf("|       \ ");
+	Sleep(i);
+	gotoxy(x, y + 2);
+	printf("|  .--.  |");
+	Sleep(i);
+	gotoxy(x, y + 3);
+	printf("|  |  |  |");
+	Sleep(i);
+	gotoxy(x, y + 4);
+	printf("|  '--'  |");
+	Sleep(i);
+	gotoxy(x, y + 5);
+	printf("|_______/ \n");
+
+}
+int char_all(int x, int y) {
+	gotoxy(x, y);
+	printf(".______ ");
+	gotoxy(x, y + 1);
+	printf("|   _  ＼");
+	gotoxy(x, y + 2);
+	printf("|  |_)  |");
+	gotoxy(x, y + 3);
+	printf("|   _  < ");
+	gotoxy(x, y + 4);
+	printf("|  |_)  |");
+	gotoxy(x, y + 5);
+	printf("|______/ ");
+	gotoxy(x + 10, y);
+	printf(" _______ ");
+	gotoxy(x + 10, y + 1);
+	printf("|   ____|");
+	gotoxy(x + 10, y + 2);
+	printf("|  |__   ");
+	gotoxy(x + 10, y + 3);
+	printf("|   __|  ");
+	gotoxy(x + 10, y + 4);
+	printf("|  |____ ");
+	gotoxy(x + 10, y + 5);
+	printf("|_______|");
+	gotoxy(x + 20, y);
+	printf("     ___      ");
+	gotoxy(x + 20, y + 1);
+	printf("    /   \\     ");
+	gotoxy(x + 20, y + 2);
+	printf("   /  ^  \\    ");
+	gotoxy(x + 20, y + 3);
+	printf("  /  /_\\  \\   ");
+	gotoxy(x + 20, y + 4);
+	printf(" /  _____  \\  ");
+	gotoxy(x + 20, y + 5);
+	printf("/__/     \\__\\ ");
+	gotoxy(x + 33, y);
+	printf("     _______.");
+	gotoxy(x + 33, y + 1);
+	printf("    /       |");
+	gotoxy(x + 33, y + 2);
+	printf("   |   (----`");
+	gotoxy(x + 33, y + 3);
+	printf("    \   \    ");
+	gotoxy(x + 33, y + 4);
+	printf(".----)   |   ");
+	gotoxy(x + 33, y + 5);
+	printf("|_______/    ");
+	gotoxy(x + 46, y);
+	printf(".___________.");
+	gotoxy(x + 46, y + 1);
+	printf("|           |");
+	gotoxy(x + 46, y + 2);
+	printf("`---|  |----`");
+	gotoxy(x + 46, y + 3);
+	printf("    |  |     ");
+	gotoxy(x + 46, y + 4);
+	printf("    |  |     ");
+	gotoxy(x + 46, y + 5);
+	printf("    |__|     ");
+	gotoxy(x + 59, y);
+	printf("     ___      ");
+	gotoxy(x + 59, y + 1);
+	printf("    /   \\     ");
+	gotoxy(x + 59, y + 2);
+	printf("   /  ^  \\    ");
+	gotoxy(x + 59, y + 3);
+	printf("  /  /_\\  \\   ");
+	gotoxy(x + 59, y + 4);
+	printf(" /  _____  \\  ");
+	gotoxy(x + 59, y + 5);
+	printf("/__/     \\__\\ ");
+	gotoxy(x + 72, y);
+	printf(".______      ");
+	gotoxy(x + 72, y + 1);
+	printf("|   _  \     ");
+	gotoxy(x + 72, y + 2);
+	printf("|  |_)  |    ");
+	gotoxy(x + 72, y + 3);
+	printf("|      /     ");
+	gotoxy(x + 72, y + 4);
+	printf("|  |\  \----.");
+	gotoxy(x + 72, y + 5);
+	printf("| _| `._____|");
+	gotoxy(x + 85, y);
+	printf(" _______  ");
+	gotoxy(x + 85, y + 1);
+	printf("|       \ ");
+	gotoxy(x + 85, y + 2);
+	printf("|  .--.  |");
+	gotoxy(x + 85, y + 3);
+	printf("|  |  |  |");
+	gotoxy(x + 85, y + 4);
+	printf("|  '--'  |");
+	gotoxy(x + 85, y + 5);
+	printf("|_______/ ");
+
+
+}
+int char_start() {
+	int x = 50, y = 20;
+	gotoxy(x - 2, y);
+	printf("> 게임 시작\n");
+
+	gotoxy(x, y + 2);
+	printf("게임 방법\n");
+
+	gotoxy(x, y + 4);
+	printf("게임 종료");
+
+	while (1) {
+		int n = key();
+
+
+		switch (n)
+		{
+		case UP: {
+			if (y > 20) {
+				gotoxy(x - 2, y);
+				printf(" ");
+
+				gotoxy(x - 2, y -= 2);
+				printf(">");
+
+
+			}
+			break;
+		}
+		case DOWN: {
+			if (y < 24) {
+				gotoxy(x - 2, y);
+				printf(" ");
+				gotoxy(x - 2, y += 2);
+				printf(">");
+
+			}
+			break;
+		}
+		case SUBMIT: {
+			return y - 20;
+		}
+		}
+	}
+}
+int key() {
+	int temp = getch();
+
+	if (temp == 224)
+	{
+		temp = getch();
+
+		switch (temp)
+		{
+		case 72:
+			return UP;
+			break;
+		case 80:
+			return DOWN;
+			break;
+		default:
+			break;
+		}
+	}
+	else if (temp == 13)
+	{
+		return SUBMIT;
+	}
+}
+int gamerule() {
+	system("cls");
+	printf("\n\n");
+	printf("                   [ 조 작 법 ]\n\n");
+	printf("              넘버패드를 사용해 카드선택\n");
+	printf("                 선택 : 엔 터 \n\n\n\n\n\n\n");
+	printf("             개 발 자 : 송하준 , 한성진 , 김예준 ");
+	printf("     엔 터 키 를  누 르 면  메 인 화 면 으 로  이 동 합 니 다 .  ");
+
+	while (1) {
+		if (key() == SUBMIT) {
+			break;
+		}
+	}
+}
+
+//캐릭터 선택 창에서 필요한 함수들
+int character_choice(int *player1_choice, int *player2_choice)
+{
+	choice_spider(1, 1);
+	choice_rabbit(35, 1);
+	choice_bird(68, 1);
+
+	print_choice(1, 46);
+	print_num1(1, 20);
+	print_num2(60, 20);
+
+	while (1)
+	{
+		*player1_choice = getch();
+		if (*player1_choice >= 49 && *player1_choice <= 51)
+		{
+			if (*player1_choice == 49) {
+				*player1_choice = 1;
+				choice_spider(6, 18);
+				break;
+			}
+			else if (*player1_choice == 50) {
+				*player1_choice = 2;
+				choice_rabbit(6, 18);
+				break;
+			}
+			else if (*player1_choice == 51) {
+				*player1_choice = 3;
+				choice_bird(6, 18);
+				break;
+			}
+		}
+	}
+
+
+	while (1)
+	{
+		*player2_choice = getch();
+		if (*player2_choice >= 49 && *player2_choice <= 51)
+		{
+			if (*player2_choice == 49) {
+				*player2_choice = 1;
+				choice_spider(68, 18);
+				break;
+			}
+			else if (*player2_choice == 50) {
+				*player2_choice = 2;
+				choice_rabbit(68, 18);
+				break;
+			}
+			else if (*player2_choice == 51) {
+				*player2_choice = 3;
+				choice_bird(68, 18);
+				break;
+			}
+		}
+	}
+
+}
+int choice_bird(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(x, y);
+	printf("┌──────────────────────────────┐");
+
+	gotoxy(x, y + 1);
+	printf("     , _ ,        3. bird          \n");
+	gotoxy(x, y + 2);
+	printf("    ( o o )       hp:120       \n");
+	gotoxy(x, y + 3);
+	printf("   /'` ' `'\\\      dmg:low        \n");
+	gotoxy(x, y + 4);
+	printf("    '''''''       [tanker]      \n");
+	gotoxy(x, y + 5);
+	printf("   \\\\'''//                     \n");
+	gotoxy(x, y + 6);
+	printf("     ㅡㅡ""                      \n");
+	gotoxy(x, y + 9);
+	printf("└──────────────────────────────┘");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int choice_spider(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(x, y);
+	printf("┌──────────────────────────────┐");
+	gotoxy(x, y + 1);
+	printf("       /      \\   \  1. spider \n");
+	gotoxy(x, y + 2);
+	printf("    \\  \\  ,,  /  /  hp:80 \n");
+	gotoxy(x, y + 3);
+	printf("     '-.`\\()/`.-'   dmg:high\n");
+	gotoxy(x, y + 4);
+	printf("    .--_'(  )'_--.  [attacker] \n");
+	gotoxy(x, y + 5);
+	printf("   / /` /`""`\ `\\ \\ \n");
+	gotoxy(x, y + 6);
+	printf("    |  |  ><  |  |  \n");
+	gotoxy(x, y + 7);
+	printf("    \\  \\      /  /  \n");
+	gotoxy(x, y + 8);
+	printf("        '.__.'      \n");
+	gotoxy(x, y + 9);
+	printf("└──────────────────────────────┘");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int choice_rabbit(int x, int y) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(x, y);
+	printf("┌──────────────────────────────┐");
+	gotoxy(x, y + 1);
+	printf("          ((`\\       2.rabbit \n");
+	gotoxy(x, y + 2);
+	printf("       ___ \\\\ '--._  hp:100\n");
+	gotoxy(x, y + 3);
+	printf("    .'`   `'    o  ) dmg:middle\n");
+	gotoxy(x, y + 4);
+	printf("   /    \   '. __.'   [balance] \n");
+	gotoxy(x, y + 5);
+	printf("  _|    /_  \ \_\_\n");
+	gotoxy(x, y + 6);
+	printf(" {_\______\-'\__\_\\n");
+	gotoxy(x, y + 9);
+	printf("└──────────────────────────────┘");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int print_num1(int x, int y) {
+	gotoxy(x, y);
+	printf(" __  \n");
+	gotoxy(x, y + 1);
+	printf("/_ | \n");
+	gotoxy(x, y + 2);
+	printf(" | | \n");
+	gotoxy(x, y + 3);
+	printf(" | | \n");
+	gotoxy(x, y + 4);
+	printf(" | | \n");
+	gotoxy(x, y + 5);
+	printf(" |_| \n");
+}
+int print_num2(int x, int y) {
+	gotoxy(x, y);
+	printf(" ___   \n");
+	gotoxy(x, y + 1);
+	printf("|__ \\  \n");
+	gotoxy(x, y + 2);
+	printf("   ) | \n");
+	gotoxy(x, y + 3);
+	printf("  / /  \n");
+	gotoxy(x, y + 4);
+	printf(" / /_  \n");
+	gotoxy(x, y + 5);
+	printf("|____| \n");
+
+}
+int print_choice(int x, int y) {
+
+	gotoxy(x, y);
+	printf("                      ______  __    __    ______    __    ______  _______ .______     _______      ___          _______..___________.\n");
+	gotoxy(x, y + 1);
+	printf(" /      ||  |  |  |  /  __  \\  |  |  /      ||   ____| |   _  \\  |   ____|    /   \\        /       ||           |\n");
+	gotoxy(x, y + 2);
+	printf("|  ,----'|  |__|  | |  |  |  | |  | |  ,----'|  |__    |  |_)  | |  |__      /  ^  \\       |   (----``---|  |----`\n");
+	gotoxy(x, y + 3);
+	printf("|  |     |   __   | |  |  |  | |  | |  |     |   __|   |   _  <  |   __|    /  /_\\  \\       \\   \\        |  |     \n");
+	gotoxy(x, y + 4);
+	printf("|  `----.|  |  |  | |  `--'  | |  | |  `----.|  |____  |  |_)  | |  |____  /  _____  \\  .----)   |       |  |     \n");
+	gotoxy(x, y + 5);
+	printf(" \\______||__|  |__|  \\______/  |__|  \\______||_______| |______/  |_______|/__/     \\__\\ |_______/        |__|     \n");
+
+
+}
+//캐릭터를 선택된 뒤에 체력 설정
+int set_hp(int player1_choice, int player2_choice, int *player1_hp, int *player2_hp)
+{
+	if (player1_choice == SPIDER_NUMBER)
+		*player1_hp = 80;
+	else if (player1_choice == RABBIT_NUMBER)
+		*player1_hp = 100;
+	else
+		*player1_hp = 120;
+
+	if (player2_choice == SPIDER_NUMBER)
+		*player2_hp = 80;
+	else if (player2_choice == RABBIT_NUMBER)
+		*player2_hp = 100;
+	else
+		*player2_hp = 120;
+}
+
+//카드 고를 때 쓰이는 함수
+int cards_choice(int *card1, int *card2, int *card3, int player_number, int player_choice)
+{
+	cardblank();
+	int temp;
+
+	PrintRight(PRINTCARD_X, PRINTCARD_Y);
+	PrintLeft(PRINTCARD_X + 20, PRINTCARD_Y);
+	PrintUp(PRINTCARD_X + 40, PRINTCARD_Y);
+	PrintDown(PRINTCARD_X + 60, PRINTCARD_Y);
+	if (player_choice == 1)
+	{
+		attack_spider_surprise_attack(PRINTCARD_X, PRINTCARD_Y + 12);
+		attack_spider_web(PRINTCARD_X + 20, PRINTCARD_Y + 12);
+		attack_spider_spear(PRINTCARD_X + 40, PRINTCARD_Y + 12);
+	}
+	else if (player_choice == 2)
+	{
+		attack_rabbit_eat_carrot(PRINTCARD_X, PRINTCARD_Y + 12);
+		attack_rabbit_tooth_scraping(PRINTCARD_X + 20, PRINTCARD_Y + 12);
+		attack_rabbit_Tunnel_digging(PRINTCARD_X + 40, PRINTCARD_Y + 12);
+	}
+	else
+	{
+		attack_bird_descent_attack(PRINTCARD_X, PRINTCARD_Y + 12);
+		attack_bird_wing_wind(PRINTCARD_X + 20, PRINTCARD_Y + 12);
+		attack_bird_piercer(PRINTCARD_X + 40, PRINTCARD_Y + 12);
+	}
+	shiledcard(PRINTCARD_X + 60, PRINTCARD_Y + 12);
+
+
+	while (1)
+	{
+		while (1)
+		{
+			temp = getch();
+			if (temp >= 49 && temp <= 56)
+			{
+				gotoxy(70, 27);
+				printf("%d ", temp - 48);
+				*card1 = temp - 48;
+				break;
+			}
+		}
+		while (1)
+		{
+			temp = getch();
+			if (temp >= 49 && temp <= 56)
+			{
+				gotoxy(75, 27);
+				printf("%d ", temp - 48);
+				*card2 = temp - 48;
+				break;
+			}
+		}
+		while (1)
+		{
+			temp = getch();
+			if (temp >= 49 && temp <= 56)
+			{
+				gotoxy(80, 27);
+				printf("%d ", temp - 48);
+				*card3 = temp - 48;
+				break;
+			}
+		}
+		pause();
+		gotoxy(70, 27);
+		printf("  ");
+
+		gotoxy(75, 27);
+		printf("  ");
+
+		gotoxy(80, 27);
+		printf("  ");
+		if (*card1 != *card2 || *card1 != *card3 || *card2 != *card3)
+			break;
+	}
+}
+
+//이긴 경우 출력하는 함수
+int p1_win(int x, int y) {
+	gotoxy(x, y);
+	printf("____    __    ____  __  .__   __. .__   __.  _______ .______          __       _______.   .______    __  ");
+	gotoxy(x, y + 1);
+	printf("\\   \\  /  \\  /   / |  | |  \\ |  | |  \\ |  | |   ____||   _  \\        |  |     /       |   |   _  \\  /_ | ");
+	gotoxy(x, y + 2);
+	printf(" \\   \\/    \\/   /  |  | |   \\|  | |   \\|  | |  |__   |  |_)  |       |  |    |   (----`   |  |_)  |  | | ");
+	gotoxy(x, y + 3);
+	printf("  \\            /   |  | |  . `  | |  . `  | |   __|  |      /        |  |     \\   \\       |   ___/   | | ");
+	gotoxy(x, y + 4);
+	printf("   \\    /\\    /    |  | |  |\\   | |  |\\   | |  |____ |  |\\  \\----.   |  | .----)   |      |  |       | | ");
+	gotoxy(x, y + 5);
+	printf("    \\__/  \\__/     |__| |__| \\__| |__| \\__| |_______|| _| `._____|   |__| |_______/       | _|       |_| ");
+}
+int p2_win(int x, int y) {
+	gotoxy(x, y);
+	printf("____    __    ____  __  .__   __. .__   __.  _______ .______          __       _______.   .______    ___   ");
+	gotoxy(x, y + 1);
+	printf("\\   \\  /  \\  /   / |  | |  \\ |  | |  \\ |  | |   ____||   _  \\        |  |     /       |   |   _  \\  |__ \\  ");
+	gotoxy(x, y + 2);
+	printf(" \\   \\/    \\/   /  |  | |   \\|  | |   \\|  | |  |__   |  |_)  |       |  |    |   (----`   |  |_)  |    ) | ");
+	gotoxy(x, y + 3);
+	printf("  \\            /   |  | |  . `  | |  . `  | |   __|  |      /        |  |     \\   \\       |   ___/    / /  ");
+	gotoxy(x, y + 4);
+	printf("   \\    /\\    /    |  | |  |\\   | |  |\\   | |  |____ |  |\\  \\----.   |  | .----)   |      |  |       / /_  ");
+	gotoxy(x, y + 5);
+	printf("    \\__/  \\__/     |__| |__| \\__| |__| \\__| |_______|| _| `._____|   |__| |_______/       | _|      |____| ");
+}
+
+//스킬 이펙트 관련 부분
+int spider_skill1_effect(int spider_x, int spider_y, int enemy_card)
+{
+	int check1 = 0, check2 = 0, check3 = 0, check4 = 0;
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill1_left_up(spider_y - 8, spider_x - 8);
+		check1 = 1;
+	}
+	if (spider_y - 8 > 3)
+	{
+		spider_skill1_left(spider_y - 8, spider_x);
+		check2 = 1;
+	}
+	if (spider_y + 8 < 29)
+	{
+		spider_skill1_right(spider_y + 8, spider_x);
+		check3 = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill1_right_up(spider_y + 8, spider_x - 8);
+		check4 = 1;
+	}
+
+	pause();
+	if(check1)
+		blank(spider_x - 8, spider_y - 8);
+	if(check2)
+		blank(spider_x, spider_y - 8);
+	if(check3)
+		blank(spider_x, spider_y + 8);
+	if(check4)
+		blank(spider_x - 8, spider_y + 8);
+
+
+	check_enemy_place(spider_x - 8, spider_y - 8, enemy_card);
+	check_enemy_place(spider_x - 8, spider_y + 8, enemy_card);
+	check_enemy_place(spider_x, spider_y - 8, enemy_card);
+	check_enemy_place(spider_x, spider_y + 8, enemy_card);
+}
+int spider_skill1_left_up(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	Sleep(10);
+	gotoxy(spider_x, spider_y);
+	printf("   **  ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 1);
+	printf("  **   ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 2);
+	printf(" ****  ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ****  ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 4);
+	printf("****** ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 5);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 6);
+	printf("*******");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill1_left(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	Sleep(10);
+	gotoxy(spider_x, spider_y);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 1);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 2);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 3);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 4);
+	printf(" ******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 5);
+	printf("  *****");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 6);
+	printf("    ***");
+	Sleep(10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+} 
+int spider_skill1_right(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 6);
+	printf("***    ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 5);
+	printf("*****  ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 4);
+	printf("****** ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 3);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 2);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 1);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y);
+	printf("*******");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill1_right_up(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 6);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 5);
+	printf("*******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 4);
+	printf(" ******");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 3);
+	printf("  **** ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 2);
+	printf("  **** ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y + 1);
+	printf("   **  ");
+	Sleep(10);
+	gotoxy(spider_x, spider_y);
+	printf("  **   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int spider_skill2_effect(int spider_x, int spider_y, int enemy_card)
+{
+	int check[8] = { 0, };
+
+
+	if (spider_x - 8 > 3)
+	{
+		spider_skill2_up(spider_y, spider_x - 8);
+		check[1] = 1;
+	}
+	Sleep(350);
+	if (spider_x + 8 < 21)
+	{
+		spider_skill2_down(spider_y, spider_x + 8);
+		check[6] = 1;
+	}
+	Sleep(100);
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill2_right_up(spider_y + 8, spider_x - 8);
+		check[2] = 1;
+	}
+	Sleep(50);
+	if (spider_y - 8 > 3)
+	{
+		spider_skill2_left(spider_y - 8, spider_x);
+		check[3] = 1;
+	}
+	Sleep(50);
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill2_left_up(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	Sleep(100);
+	if (spider_y + 8 < 29)
+	{
+		spider_skill2_right(spider_y + 8, spider_x);
+		check[4] = 1;
+	}
+	Sleep(50);
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill2_left_down(spider_y + 8, spider_x + 8);
+		check[7] = 1;
+	}
+	Sleep(100);
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill2_left_down(spider_y - 8, spider_x + 8);
+		check[5] = 1;
+	}
+
+	Sleep(300);
+
+	if (spider_x - 8 > 3)
+	{
+		spider_skill2_red(spider_y, spider_x - 8);
+	}
+	if (spider_x + 8 < 21)
+	{
+		spider_skill2_red(spider_y, spider_x + 8);
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill2_red(spider_y + 8, spider_x - 8);
+	}
+	if (spider_y - 8 > 3)
+	{
+		spider_skill2_red(spider_y - 8, spider_x);
+	}
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill2_red(spider_y - 8, spider_x - 8);
+	}
+	if (spider_y + 8 < 29)
+	{
+		spider_skill2_red(spider_y + 8, spider_x);
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill2_red(spider_y + 8, spider_x + 8);
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill2_red(spider_y - 8, spider_x + 8);
+	}
+
+	pause();
+	if (check[0])
+		blank(spider_x - 8, spider_y - 8);
+	if (check[1])
+		blank(spider_x - 8, spider_y);
+	if (check[2])
+		blank(spider_x - 8, spider_y + 8);
+	if (check[3])
+		blank(spider_x, spider_y - 8);
+	if (check[4])
+		blank(spider_x, spider_y + 8);
+	if (check[5])
+		blank(spider_x + 8, spider_y - 8);
+	if (check[6])
+		blank(spider_x + 8, spider_y);
+	if (check[7])
+		blank(spider_x + 8, spider_y + 8);
+
+
+	check_enemy_place(spider_x - 8, spider_y - 8, enemy_card);
+	check_enemy_place(spider_x - 8, spider_y, enemy_card);
+	check_enemy_place(spider_x - 8, spider_y + 8, enemy_card);
+	check_enemy_place(spider_x, spider_y - 8, enemy_card);
+	check_enemy_place(spider_x, spider_y + 8, enemy_card);
+	check_enemy_place(spider_x + 8, spider_y - 8, enemy_card);
+	check_enemy_place(spider_x + 8, spider_y, enemy_card);
+	check_enemy_place(spider_x + 8, spider_y + 8, enemy_card);
+}
+int spider_skill2_left_up(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_up(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_right_up(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_left(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_right(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_left_down(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_down(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_right_down(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("   |   ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" \\'| / ");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" _'|/__");
+	gotoxy(spider_x, spider_y + 3);
+	printf(" ,-*.""  ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("+'/|\\` ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" / |'\\ ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill2_red(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("///////");
+	gotoxy(spider_x, spider_y + 1);
+	printf("///////");
+	gotoxy(spider_x, spider_y + 2);
+	printf("///////");
+	gotoxy(spider_x, spider_y + 3);
+	printf("///////");
+	gotoxy(spider_x, spider_y + 4);
+	printf("///////");
+	gotoxy(spider_x, spider_y + 5);
+	printf("///////");
+	gotoxy(spider_x, spider_y + 6);
+	printf("///////");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int spider_skill3_effect(int spider_x, int spider_y, int enemy_card)
+{
+	int check[4] = { 0, };
+
+
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill3_1(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill3_1(spider_y + 8, spider_x - 8);
+		check[1] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill3_1(spider_y - 8, spider_x + 8);
+		check[2] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill3_1(spider_y + 8, spider_x + 8);
+		check[3] = 1;
+	}
+	Sleep(200);
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill3_2(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill3_2(spider_y + 8, spider_x - 8);
+		check[1] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill3_2(spider_y - 8, spider_x + 8);
+		check[2] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill3_2(spider_y + 8, spider_x + 8);
+		check[3] = 1;
+	}
+	Sleep(150);
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill3_2(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill3_2(spider_y + 8, spider_x - 8);
+		check[1] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill3_2(spider_y - 8, spider_x + 8);
+		check[2] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill3_2(spider_y + 8, spider_x + 8);
+		check[3] = 1;
+	}
+	Sleep(100);
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill3_3(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill3_3(spider_y + 8, spider_x - 8);
+		check[1] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill3_3(spider_y - 8, spider_x + 8);
+		check[2] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill3_3(spider_y + 8, spider_x + 8);
+		check[3] = 1;
+	}
+	Sleep(70);
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill3_4(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill3_4(spider_y + 8, spider_x - 8);
+		check[1] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill3_4(spider_y - 8, spider_x + 8);
+		check[2] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill3_4(spider_y + 8, spider_x + 8);
+		check[3] = 1;
+	}
+	Sleep(50);
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill3_5(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill3_5(spider_y + 8, spider_x - 8);
+		check[1] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill3_5(spider_y - 8, spider_x + 8);
+		check[2] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill3_5(spider_y + 8, spider_x + 8);
+		check[3] = 1;
+	}
+	Sleep(400);
+	if (spider_x - 8 > 3 && spider_y - 8 > 3)
+	{
+		spider_skill3_spider(spider_y - 8, spider_x - 8);
+		check[0] = 1;
+	}
+	if (spider_x - 8 > 3 && spider_y + 8 < 29)
+	{
+		spider_skill3_spider(spider_y + 8, spider_x - 8);
+		check[1] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y - 8 > 3)
+	{
+		spider_skill3_spider(spider_y - 8, spider_x + 8);
+		check[2] = 1;
+	}
+	if (spider_x + 8 < 21 && spider_y + 8 < 29)
+	{
+		spider_skill3_spider(spider_y + 8, spider_x + 8);
+		check[3] = 1;
+	}
+	spider_skill3_spider(spider_y, spider_x);
+
+	pause();
+	if (check[0])
+		blank(spider_x - 8, spider_y - 8);
+	if (check[1])
+		blank(spider_x - 8, spider_y + 8);
+	if (check[2])
+		blank(spider_x + 8, spider_y - 8);
+	if (check[3])
+		blank(spider_x + 8, spider_y + 8);
+
+	blank(spider_x, spider_y);
+	print_spider(spider_x, spider_y);
+	check_enemy_place(spider_x - 8, spider_y - 8, enemy_card);
+	check_enemy_place(spider_x - 8, spider_y + 8, enemy_card);
+	check_enemy_place(spider_x + 8, spider_y - 8, enemy_card);
+	check_enemy_place(spider_x + 8, spider_y + 8, enemy_card);
+}
+int spider_skill3_1(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 1);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 2);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 3);
+	printf("   .   ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 5);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill3_2(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 1);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 2);
+	printf("  . .  ");
+	gotoxy(spider_x, spider_y + 3);
+	printf("   .   ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("  . .  ");
+	gotoxy(spider_x, spider_y + 5);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill3_3(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" .   . ");
+	gotoxy(spider_x, spider_y + 2);
+	printf("  . .  ");
+	gotoxy(spider_x, spider_y + 3);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("  . .  ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" .   . ");
+	gotoxy(spider_x, spider_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill3_4(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf(".     .");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" .   . ");
+	gotoxy(spider_x, spider_y + 2);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 3);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" .   . ");
+	gotoxy(spider_x, spider_y + 6);
+	printf(".     .");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill3_5(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf("..   ..");
+	gotoxy(spider_x, spider_y + 1);
+	printf(".     .");
+	gotoxy(spider_x, spider_y + 2);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 3);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 4);
+	printf("       ");
+	gotoxy(spider_x, spider_y + 5);
+	printf(".     .");
+	gotoxy(spider_x, spider_y + 6);
+	printf("..   ..");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int spider_skill3_spider(int spider_x, int spider_y)
+{
+	spider_x -= 3;
+	spider_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	gotoxy(spider_x, spider_y);
+	printf(" .|  |.");
+	gotoxy(spider_x, spider_y + 1);
+	printf(" ||  ||");
+	gotoxy(spider_x, spider_y + 2);
+	printf(" \\\\()//");
+	gotoxy(spider_x, spider_y + 3);
+	printf("  ={}= ");
+	gotoxy(spider_x, spider_y + 4);
+	printf(" //`'\\\\");
+	gotoxy(spider_x, spider_y + 5);
+	printf(" '\\  /'");
+	gotoxy(spider_x, spider_y + 6);
+	printf("   `'  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int bird_skill1_effect(int bird_x, int bird_y, int enemy_card) {
+	int check1 = 0, check2 = 0, check3 = 0, check4 = 0;
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (bird_y - 8 > 3) {
+			bird_skill1_second(bird_y - 8, bird_x);
+			check1 = 1;
+		}
+		if (bird_y - 8 > 3 && bird_x + 8 < 21) {
+			bird_skill1_first(bird_y - 8, bird_x + 8);
+			check3 = 1;
+		}
+		if (bird_y + 8 < 29) {
+			bird_skill1_fourth(bird_y + 8, bird_x);
+			check2 = 1;
+		}
+		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+			bird_skill1_third(bird_y + 8, bird_x + 8);
+			check4 = 1;
+		}
+		Sleep(80);
+		if (bird_y - 8 > 3) {
+			bird_skill1_third(bird_y - 8, bird_x);
+			check1 = 1;
+		}
+		if (bird_y - 8 > 3 && bird_x + 8 < 21) {
+			bird_skill1_second(bird_y - 8, bird_x + 8);
+			check3 = 1;
+		}
+		if (bird_y + 8 < 29) {
+			bird_skill1_first(bird_y + 8, bird_x);
+			check2 = 1;
+		}
+		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+			bird_skill1_fourth(bird_y + 8, bird_x + 8);
+			check4 = 1;
+		}
+		Sleep(80);
+		if (bird_y - 8 > 3) {
+			bird_skill1_fourth(bird_y - 8, bird_x);
+			check1 = 1;
+		}
+		if (bird_y - 8 > 3 && bird_x + 8 < 21) {
+			bird_skill1_third(bird_y - 8, bird_x + 8);
+			check3 = 1;
+		}
+		if (bird_y + 8 < 29) {
+			bird_skill1_second(bird_y + 8, bird_x);
+			check2 = 1;
+		}
+		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+			bird_skill1_first(bird_y + 8, bird_x + 8);
+			check4 = 1;
+		}
+		Sleep(80);
+		if (bird_y - 8 > 3) {
+			bird_skill1_first(bird_y - 8, bird_x);
+			check1 = 1;
+		}
+		if (bird_y - 8 > 3 && bird_x + 8 < 21) {
+			bird_skill1_fourth(bird_y - 8, bird_x + 8);
+			check3 = 1;
+		}
+		if (bird_y + 8 < 29) {
+			bird_skill1_third(bird_y + 8, bird_x);
+			check2 = 1;
+		}
+		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+			bird_skill1_second(bird_y + 8, bird_x + 8);
+			check4 = 1;
+		}
+		Sleep(80);
+	}
+	Sleep(300);
+	bird_skill1_face(bird_y, bird_x);
+	if (bird_y - 8 > 3) {
+		bird_skill1_death(bird_y - 8, bird_x);
+		check1 = 1;
+	}
+	if (bird_y - 8 > 3 && bird_x + 8 < 21) {
+		bird_skill1_death(bird_y - 8, bird_x + 8);
+		check3 = 1;
+	}
+	if (bird_y + 8 < 29) {
+		bird_skill1_death(bird_y + 8, bird_x);
+		check2 = 1;
+	}
+	if (bird_y + 8 < 29, bird_x + 8 < 21) {
+		bird_skill1_death(bird_y + 8, bird_x + 8);
+		check4 = 1;
+	}
+
+	pause();
+	blank(bird_x, bird_y);
+	if (check1)
+		blank(bird_x, bird_y - 8);
+	if (check2)
+		blank(bird_x, bird_y + 8);
+	if (check3)
+		blank(bird_x + 8, bird_y - 8);
+	if (check4)
+		blank(bird_x + 8, bird_y + 8);
+
+	print_bird(bird_x, bird_y);
+	check_enemy_place(bird_x, bird_y - 8, enemy_card);
+	check_enemy_place(bird_x, bird_y + 8, enemy_card);
+	check_enemy_place(bird_x + 8, bird_y - 8, enemy_card);
+	check_enemy_place(bird_x + 8, bird_y + 8, enemy_card);
+}
+int bird_skill1_first(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("  \\\\\\\\\\");
+	gotoxy(bird_x, bird_y + 1);
+	printf("  /////");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" ///// ");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" \\\\\\\\\\ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("  \\\\\\\\\\");
+	gotoxy(bird_x, bird_y + 5);
+	printf("  /////");
+	gotoxy(bird_x, bird_y + 6);
+	printf(" ///// ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill1_second(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("  /////");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" ///// ");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" \\\\\\\\\\ ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  \\\\\\\\\\");
+	gotoxy(bird_x, bird_y + 4);
+	printf("  /////");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" ///// ");
+	gotoxy(bird_x, bird_y + 6);
+	printf(" \\\\\\\\\\ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill1_third(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" ///// ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" \\\\\\\\\\ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("  \\\\\\\\\\");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  /////");
+	gotoxy(bird_x, bird_y + 4);
+	printf(" ///// ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" \\\\\\\\\\ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  \\\\\\\\\\");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill1_fourth(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" \\\\\\\\\\ ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("  \\\\\\\\\\");
+	gotoxy(bird_x, bird_y + 2);
+	printf("  /////");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" ///// ");
+	gotoxy(bird_x, bird_y + 4);
+	printf(" \\\\\\\\\\ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("  \\\\\\\\\\");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  /////");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill1_death(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("_______");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" /_ |  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("/\\/ |/ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf(" /  |__");
+	gotoxy(bird_x, bird_y + 5);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill1_face(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("O)\\ /(O");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   V   ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int bird_skill2_effect(int bird_x, int bird_y, int enemy_card)
+{
+	int check1 = 0, check2 = 0, check3 = 0, check4 = 0, check5 = 0, check6 = 0;
+
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (bird_x - 8 > 3 && bird_y - 8 > 3)
+		{
+			bird_skill2_left_up1(bird_y - 8, bird_x - 8);
+			check1 = 1;
+		}
+		if (bird_x + 8 < 21 && bird_y - 8 > 3)
+		{
+			bird_skill2_left_down1(bird_y - 8, bird_x + 8);
+			check2 = 1;
+		}
+		if (bird_x - 8 > 3 && bird_y + 8 < 29)
+		{
+			bird_skill2_right_up1(bird_y + 8, bird_x - 8);
+			check3 = 1;
+		}
+		if (bird_x + 8 < 21 && bird_y + 8 < 29)
+		{
+			bird_skill2_right_down1(bird_y + 8, bird_x + 8);
+			check4 = 1;
+		}
+		if (bird_x - 8 > 3)
+		{
+			bird_skill2_up1(bird_y, bird_x - 8);
+			check5 = 1;
+		}
+		if (bird_x + 8 < 21)
+		{
+			bird_skill2_down1(bird_y, bird_x + 8);
+			check6 = 1;
+		}
+		Sleep(50);
+		if (bird_x - 8 > 3 && bird_y - 8 > 3)
+		{
+			bird_skill2_left_up2(bird_y - 8, bird_x - 8);
+			check1 = 1;
+		}
+		if (bird_x + 8 < 21 && bird_y - 8 > 3)
+		{
+			bird_skill2_left_down2(bird_y - 8, bird_x + 8);
+			check2 = 1;
+		}
+		if (bird_x - 8 > 3 && bird_y + 8 < 29)
+		{
+			bird_skill2_right_up2(bird_y + 8, bird_x - 8);
+			check3 = 1;
+		}
+		if (bird_x + 8 < 21 && bird_y + 8 < 29)
+		{
+			bird_skill2_right_down2(bird_y + 8, bird_x + 8);
+			check4 = 1;
+		}
+		if (bird_x - 8 > 3)
+		{
+			bird_skill2_up2(bird_y, bird_x - 8);
+			check5 = 1;
+		}
+		if (bird_x + 8 < 21)
+		{
+			bird_skill2_down2(bird_y, bird_x + 8);
+			check6 = 1;
+		}
+		Sleep(50);
+	}
+	Sleep(300);
+	if (bird_x - 8 > 3 && bird_y - 8 > 3)
+	{
+		bird_skill2_left_up3(bird_y - 8, bird_x - 8);
+		check1 = 1;
+	}
+	if (bird_x + 8 < 21 && bird_y - 8 > 3)
+	{
+		bird_skill2_left_down3(bird_y - 8, bird_x + 8);
+		check2 = 1;
+	}
+	if (bird_x - 8 > 3 && bird_y + 8 < 29)
+	{
+		bird_skill2_right_up3(bird_y + 8, bird_x - 8);
+		check3 = 1;
+	}
+	if (bird_x + 8 < 21 && bird_y + 8 < 29)
+	{
+		bird_skill2_right_down3(bird_y + 8, bird_x + 8);
+		check4 = 1;
+	}
+	if (bird_x - 8 > 3)
+	{
+		bird_skill2_up3(bird_y, bird_x - 8);
+		check5 = 1;
+	}
+	if (bird_x + 8 < 21)
+	{
+		bird_skill2_down3(bird_y, bird_x + 8);
+		check6 = 1;
+	}
+
+
+	pause();
+	if (check1)
+		blank(bird_x - 8, bird_y - 8);
+	if (check2)
+		blank(bird_x + 8, bird_y - 8);
+	if (check3)
+		blank(bird_x - 8, bird_y + 8);
+	if (check4)
+		blank(bird_x + 8, bird_y + 8);
+	if (check5)
+		blank(bird_x - 8, bird_y);
+	if (check6)
+		blank(bird_x + 8, bird_y);
+
+
+
+	check_enemy_place(bird_x - 8, bird_y - 8, enemy_card);
+	check_enemy_place(bird_x + 8, bird_y + 8, enemy_card);
+	check_enemy_place(bird_x + 8, bird_y - 8, enemy_card);
+	check_enemy_place(bird_x - 8, bird_y + 8, enemy_card);
+	check_enemy_place(bird_x + 8, bird_y, enemy_card);
+	check_enemy_place(bird_x - 8, bird_y, enemy_card);
+}
+int bird_skill2_left_up1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" __   ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("__   __");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  __ _ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("__  __ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("   _ _ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("__  _  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_right_up1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" __   ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("__   __");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  __ _ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("__  __ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("   _ _ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("__  _  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_up1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" __  _ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" _ _   ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  _ __ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_left_down1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" __  _ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" _ _   ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  _ __ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_right_down1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" __  _ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" _ _   ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  _ __ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_down1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" __   ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("__   __");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  __ _ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("__  __ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("   _ _ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("__  _  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_left_up2(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" __  _ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" _ _   ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  _ __ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_right_up2(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" __  _ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" _ _   ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  _ __ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_up2(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" __   ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("__   __");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  __ _ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("__  __ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("   _ _ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("__  _  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_left_down2(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" __   ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("__   __");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  __ _ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("__  __ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("   _ _ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("__  _  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_right_down2(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" __   ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("__   __");
+	gotoxy(bird_x, bird_y + 3);
+	printf("  __ _ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("__  __ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("   _ _ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("__  _  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_down2(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 1);
+	printf(" __  _ ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" _  __ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   __  ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" _ _   ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  _ __ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_left_up3(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("   _/#|");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" _/###|");
+	gotoxy(bird_x, bird_y + 3);
+	printf("/#####|");
+	gotoxy(bird_x, bird_y + 4);
+	printf("|#####/");
+	gotoxy(bird_x, bird_y + 5);
+	printf("|/|#/  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  |/   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_right_up3(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("|#\\_   ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("|###\\_ ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("|#####\\");
+	gotoxy(bird_x, bird_y + 4);
+	printf("\\#####|");
+	gotoxy(bird_x, bird_y + 5);
+	printf("  \\#|\\|");
+	gotoxy(bird_x, bird_y + 6);
+	printf("   \\|  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_up3(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("O)\\ /(O");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   V   ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_left_down3(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("   _/#|");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" _/###|");
+	gotoxy(bird_x, bird_y + 3);
+	printf("/#####|");
+	gotoxy(bird_x, bird_y + 4);
+	printf("|#####/");
+	gotoxy(bird_x, bird_y + 5);
+	printf("|/|#/  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("  |/   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_right_down3(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("|#\\_   ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("|###\\_ ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("|#####\\");
+	gotoxy(bird_x, bird_y + 4);
+	printf("\\#####|");
+	gotoxy(bird_x, bird_y + 5);
+	printf("  \\#|\\|");
+	gotoxy(bird_x, bird_y + 6);
+	printf("   \\|  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill2_down3(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("O)\\ /(O");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   V   ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int bird_skill3_effect(int bird_x, int bird_y, int enemy_card)
+{
+	int check1 = 0, check2 = 0, check3 = 0, check4 = 0, check5 = 0, check6 = 0;
+
+	if (bird_x - 8 > 3 && bird_y - 8 > 3)
+	{
+		bird_skill3_left_up1(bird_y - 8, bird_x - 8);
+		check1 = 1;
+	}
+	if (bird_y - 8 > 3)
+	{
+		bird_skill3_left1(bird_y - 8, bird_x);
+		check2 = 1;
+	}
+	if (bird_x - 8 > 3)
+	{
+		bird_skill3_up1(bird_y, bird_x - 8);
+		check5 = 1;
+	}
+	if (bird_y + 8 < 29)
+	{
+		bird_skill3_right1(bird_y + 8, bird_x);
+		check3 = 1;
+	}
+	if (bird_x + 8 < 21 && bird_y + 8 < 29)
+	{
+		bird_skill3_right_down1(bird_y + 8, bird_x + 8);
+		check4 = 1;
+	}
+	if (bird_x + 8 < 21)
+	{
+		bird_skill3_down1(bird_y, bird_x + 8);
+		check6 = 1;
+	}
+	Sleep(500);
+	if (bird_x - 8 > 3 && bird_y - 8 > 3)
+	{
+		bird_skill3_left_up(bird_y - 8, bird_x - 8);
+		check1 = 1;
+	}
+	if (bird_y - 8 > 3)
+	{
+		bird_skill3_left(bird_y - 8, bird_x);
+		check2 = 1;
+	}
+	if (bird_x - 8 > 3)
+	{
+		bird_skill3_up(bird_y, bird_x - 8);
+		check5 = 1;
+	}
+	Sleep(100);
+	if (bird_y + 8 < 29)
+	{
+		bird_skill3_right(bird_y + 8, bird_x);
+		check3 = 1;
+	}
+	if (bird_x + 8 < 21 && bird_y + 8 < 29)
+	{
+		bird_skill3_right_down(bird_y + 8, bird_x + 8);
+		check4 = 1;
+	}
+	if (bird_x + 8 < 21)
+	{
+		bird_skill3_down(bird_y, bird_x + 8);
+		check6 = 1;
+	}
+
+
+	pause();
+	if (check1)
+		blank(bird_x - 8, bird_y - 8);
+	if (check2)
+		blank(bird_x, bird_y - 8);
+	if (check3)
+		blank(bird_x, bird_y + 8);
+	if (check4)
+		blank(bird_x + 8, bird_y + 8);
+	if (check5)
+		blank(bird_x - 8, bird_y);
+	if (check6)
+		blank(bird_x + 8, bird_y);
+
+
+
+	check_enemy_place(bird_x - 8, bird_y - 8, enemy_card);
+	check_enemy_place(bird_x - 8, bird_y, enemy_card);
+	check_enemy_place(bird_x, bird_y - 8, enemy_card);
+	check_enemy_place(bird_x, bird_y + 8, enemy_card);
+	check_enemy_place(bird_x + 8, bird_y, enemy_card);
+	check_enemy_place(bird_x + 8, bird_y + 8, enemy_card);
+}
+int bird_skill3_left_up(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("   ____");
+	gotoxy(bird_x, bird_y + 1);
+	printf("  /    ");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" /     ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("|      ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("|      ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("|   |  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("| | |  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_left(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf(" \\| | /");
+	gotoxy(bird_x, bird_y + 1);
+	printf("  \\ /V ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("   V   ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_right(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("  /\\   ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" /##\\  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("/####\\ ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_right_down(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("######|");
+	gotoxy(bird_x, bird_y + 1);
+	printf("######|");
+	gotoxy(bird_x, bird_y + 2);
+	printf("\\#####|");
+	gotoxy(bird_x, bird_y + 3);
+	printf("#\\####|");
+	gotoxy(bird_x, bird_y + 4);
+	printf("## ###/");
+	gotoxy(bird_x, bird_y + 5);
+	printf("_____/ ");
+	gotoxy(bird_x, bird_y + 6);
+	printf(" V  V  ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_up(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("___    ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("   \\   ");
+	gotoxy(bird_x, bird_y + 2);
+	printf("    \\  ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("   | \\ ");
+	gotoxy(bird_x, bird_y + 4);
+	printf(" | | / ");
+	gotoxy(bird_x, bird_y + 5);
+	printf(" | /V  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf(" /V    ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_down(int bird_x, int bird_y) {
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("    /\\/");
+	gotoxy(bird_x, bird_y + 1);
+	printf("   /##\\");
+	gotoxy(bird_x, bird_y + 2);
+	printf("  /####");
+	gotoxy(bird_x, bird_y + 3);
+	printf(" |#####");
+	gotoxy(bird_x, bird_y + 4);
+	printf("  \\####");
+	gotoxy(bird_x, bird_y + 5);
+	printf("   \\___");
+	gotoxy(bird_x, bird_y + 6);
+	printf("     V ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_left_up1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("_|_    ");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" |     ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   _|_ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("    |  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_left1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("    _|_");
+	gotoxy(bird_x, bird_y + 2);
+	printf("     | ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf(" _|_   ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("  |    ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_right1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("_|_    ");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" |     ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   _|_ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("    |  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_right_down1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("    _|_");
+	gotoxy(bird_x, bird_y + 2);
+	printf("     | ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf(" _|_   ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("  |    ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_up1(int bird_x, int bird_y) {
+
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("    _|_");
+	gotoxy(bird_x, bird_y + 2);
+	printf("     | ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf(" _|_   ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("  |    ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int bird_skill3_down1(int bird_x, int bird_y) {
+	bird_x -= 3;
+	bird_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	gotoxy(bird_x, bird_y);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 1);
+	printf("_|_    ");
+	gotoxy(bird_x, bird_y + 2);
+	printf(" |     ");
+	gotoxy(bird_x, bird_y + 3);
+	printf("       ");
+	gotoxy(bird_x, bird_y + 4);
+	printf("   _|_ ");
+	gotoxy(bird_x, bird_y + 5);
+	printf("    |  ");
+	gotoxy(bird_x, bird_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int rabbit_skill1_effect(int rabbit_x, int rabbit_y)
+{
+	rabbit_skill1_heal(rabbit_y, rabbit_x);
+
+	pause();
+	blank(rabbit_x, rabbit_y);
+
+	print_rabbit(rabbit_x, rabbit_y);
+}
+int rabbit_skill1_heal(int rabbit_x, int rabbit_y)
+{
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("   _   ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf(" _| |_ ");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("|_   _|");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("  |_|  ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int rabbit_skill2_effect(int rabbit_x, int rabbit_y, int enemy_card)
+{
+	int check1 = 0, check2 = 0, check3 = 0, check4 = 0, check5 = 0, check6 = 0;
+
+	if (rabbit_x - 8 > 3 && rabbit_y - 8 > 3)
+	{
+		rabbit_skill2_left_up(rabbit_y - 8, rabbit_x - 8);
+		check1 = 1;
+	}
+	if (rabbit_y - 8 > 3)
+	{
+		rabbit_skill2_left(rabbit_y - 8, rabbit_x);
+		check2 = 1;
+	}
+	if (rabbit_x + 8 < 21 && rabbit_y - 8 > 3)
+	{
+		rabbit_skill2_left_down(rabbit_y - 8, rabbit_x + 8);
+		check5 = 1;
+	}
+	if (rabbit_x - 8 > 3 && rabbit_y + 8 < 29)
+	{
+		rabbit_skill2_right_up(rabbit_y + 8, rabbit_x - 8);
+		check4 = 1;
+	}
+	if (rabbit_y + 8 < 29)
+	{
+		rabbit_skill2_right(rabbit_y + 8, rabbit_x);
+		check3 = 1;
+	}
+	if (rabbit_x + 8 < 21 && rabbit_y + 8 < 29)
+	{
+		rabbit_skill2_right_down(rabbit_y + 8, rabbit_x + 8);
+		check6 = 1;
+	}
+
+	pause();
+	if (check1)
+		blank(rabbit_x - 8, rabbit_y - 8);
+	if (check2)
+		blank(rabbit_x, rabbit_y - 8);
+	if (check3)
+		blank(rabbit_x, rabbit_y + 8);
+	if (check4)
+		blank(rabbit_x - 8, rabbit_y + 8);
+	if (check5)
+		blank(rabbit_x + 8, rabbit_y - 8);
+	if (check6)
+		blank(rabbit_x + 8, rabbit_y + 8);
+
+
+	check_enemy_place(rabbit_x - 8, rabbit_y - 8, enemy_card);
+	check_enemy_place(rabbit_x, rabbit_y - 8, enemy_card);
+	check_enemy_place(rabbit_x, rabbit_y + 8, enemy_card);
+	check_enemy_place(rabbit_x - 8, rabbit_y + 8, enemy_card);
+	check_enemy_place(rabbit_x + 8, rabbit_y - 8, enemy_card);
+	check_enemy_place(rabbit_x + 8, rabbit_y + 8, enemy_card);
+}
+int rabbit_skill2_left_up(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("*******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("*******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("*******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf(" ******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf(" ******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf(" ******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("  *****");
+	Sleep(10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill2_left(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("  *****");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("  *****");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("   ****");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("   ****");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("   ****");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("   ****");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("    ***");
+	Sleep(10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill2_left_down(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("    ***");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("    ***");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("     **");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("     **");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("     **");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("      *");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("      *");
+	Sleep(10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill2_right_up(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("*******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("*******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("*******");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("****** ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("****** ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("****** ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("*****  ");
+	Sleep(10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill2_right(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("*****  ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("*****  ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("****   ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("****   ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("****   ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("***    ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("***    ");
+	Sleep(10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill2_right_down(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("***    ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("**     ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("**     ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("**     ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("**     ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("*      ");
+	Sleep(10);
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("*      ");
+	Sleep(10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int rabbit_skill3_effect(int rabbit_x, int rabbit_y, int enemy_card)
+{
+	int check1 = 0, check2 = 0, check3 = 0, check4 = 0;
+	if (rabbit_y - 8 > 3)
+	{
+		rabbit_skill3_left1(rabbit_y - 8, rabbit_x);
+		check1 = 1;
+	}
+	if (rabbit_y + 8 < 29)
+	{
+		rabbit_skill3_right1(rabbit_y + 8, rabbit_x);
+		check2 = 1;
+	}
+	if (rabbit_x + 8 < 21)
+	{
+		rabbit_skill3_down1(rabbit_y, rabbit_x + 8);
+		check3 = 1;
+	}
+	if (rabbit_x - 8 > 3)
+	{
+		rabbit_skill3_up1(rabbit_y, rabbit_x - 8);
+		check4 = 1;
+	}
+	Sleep(400);
+	if (rabbit_y - 8 > 3)
+	{
+		rabbit_skill3_left2(rabbit_y - 8, rabbit_x);
+		check1 = 1;
+	}
+	if (rabbit_y + 8 < 29)
+	{
+		rabbit_skill3_right2(rabbit_y + 8, rabbit_x);
+		check2 = 1;
+	}
+	if (rabbit_x + 8 < 21)
+	{
+		rabbit_skill3_down2(rabbit_y, rabbit_x + 8);
+		check3 = 1;
+	}
+	if (rabbit_x - 8 > 3)
+	{
+		rabbit_skill3_up2(rabbit_y, rabbit_x - 8);
+		check4 = 1;
+	}
+	Sleep(400);
+	if (rabbit_y - 8 > 3)
+	{
+		rabbit_skill3_left(rabbit_y - 8, rabbit_x);
+		check1 = 1;
+	}
+	if (rabbit_y + 8 < 29)
+	{
+		rabbit_skill3_right(rabbit_y + 8, rabbit_x);
+		check2 = 1;
+	}
+	if (rabbit_x + 8 < 21)
+	{
+		rabbit_skill3_down(rabbit_y, rabbit_x + 8);
+		check3 = 1;
+	}
+	if (rabbit_x - 8 > 3)
+	{
+		rabbit_skill3_up(rabbit_y, rabbit_x - 8);
+		check4 = 1;
+	}
+
+	pause();
+	if (check1)
+		blank(rabbit_x, rabbit_y - 8);
+	if (check2)
+		blank(rabbit_x, rabbit_y + 8);
+	if (check3)
+		blank(rabbit_x + 8, rabbit_y);
+	if (check4)
+		blank(rabbit_x - 8, rabbit_y);
+
+	check_enemy_place(rabbit_x, rabbit_y - 8, enemy_card);
+	check_enemy_place(rabbit_x, rabbit_y + 8, enemy_card);
+	check_enemy_place(rabbit_x - 8, rabbit_y, enemy_card);
+	check_enemy_place(rabbit_x + 8, rabbit_y, enemy_card);
+}
+int rabbit_skill3_up1(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf(" '\\_/  ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_down1(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("   ||  ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("  _/\\  ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_left1(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("    |  ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("    \\__");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("    /  ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("    |  ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_right1(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("__/    ");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("  \\    ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_up2(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("\\  /_| ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf(" \\'`|_/");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf(" '\\_/  ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_down2(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("   ||  ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("  _/\\  ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf(" /\\  \`\\");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("/  '\\ |");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_left2(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("    \\  ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("  __|  ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf(" __ \\__");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("  /'/  ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("  /`|  ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("   /   ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_right2(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("   /   ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("__/'`  ");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("  \\__  ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("    \\  ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_up(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("       ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("| \\   /");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("|  \\ / ");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("\\  /_| ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf(" \\'`|_/");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf(" '\\_/  ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("   |   ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_down(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("   ||  ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("  _/\\  ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf(" /\\  \`\\");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("/  '\\ |");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("|`. | '");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("\\   /'.");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_left(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("_ '`\\  ");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf(" \\__|  ");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("\\__ \\__");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("__/'/  ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf(" _/`|  ");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("/  /   ");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf(" /'    ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+int rabbit_skill3_right(int rabbit_x, int rabbit_y) {
+
+	rabbit_x -= 3;
+	rabbit_y -= 3;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	gotoxy(rabbit_x, rabbit_y);
+	printf("    _/`");
+	gotoxy(rabbit_x, rabbit_y + 1);
+	printf("   / __");
+	gotoxy(rabbit_x, rabbit_y + 2);
+	printf("__/'` _");
+	gotoxy(rabbit_x, rabbit_y + 3);
+	printf("  \\__/ ");
+	gotoxy(rabbit_x, rabbit_y + 4);
+	printf("    \\_'");
+	gotoxy(rabbit_x, rabbit_y + 5);
+	printf("      `");
+	gotoxy(rabbit_x, rabbit_y + 6);
+	printf("       ");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+int skill8_effect(int x, int y, int my_choice)
+{
+	guard_effect(y, x);
+
+	pause();
+	blank(x, y);
+
+	if (my_choice == SPIDER_NUMBER)
+		print_spider(x, y);
+	else if (my_choice == RABBIT_NUMBER)
+		print_rabbit(x, y);
+	else
+		print_bird(x, y);
+}
+int guard_effect(int x, int y)
+{
+	x -= 3;
+	y -= 3;
+	gotoxy(x, y);
+	printf("|`-_-`|");
+	gotoxy(x, y + 1);
+	printf("|_____|");
+	gotoxy(x, y + 2);
+	printf("|_____|");
+	gotoxy(x, y + 3);
+	printf("|     |");
+	gotoxy(x, y + 4);
+	printf(" \\   / ");
+	gotoxy(x, y + 5);
+	printf("  \\_/  ");
+	gotoxy(x, y + 6);
+	printf("       ");
+}
+
+int check_enemy_place(int spider_x, int spider_y, int enemy_card)
+{
+	if (map[spider_x][spider_y] == PLAYER2NUMBER || map[spider_x][spider_y] == PLAYER1NUMBER)
+	{
+		if (enemy_card == SPIDER_NUMBER)
+			print_spider(spider_x, spider_y);
+		else if (enemy_card == RABBIT_NUMBER)
+			print_rabbit(spider_x, spider_y);
+		else
+			print_bird(spider_x, spider_y);
+	}
+}
+
+
+//END------------------------
