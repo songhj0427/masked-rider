@@ -27,14 +27,24 @@
 #define GUA 8
 
 #define SPIDER_SKILL1_DAMAGE 35
-#define SPIDER_SKILL2_DAMAGE 20
-#define SPIDER_SKILL3_DAMAGE 35
+#define SPIDER_SKILL2_DAMAGE 25
+#define SPIDER_SKILL3_DAMAGE 45
 #define RABBIT_SKILL1_HEAL 10
 #define RABBIT_SKILL2_DAMAGE 15
 #define RABBIT_SKILL3_DAMAGE 30
 #define BIRD_SKILL1_DAMAGE 25
 #define BIRD_SKILL2_DAMAGE 15
 #define BIRD_SKILL3_DAMAGE 20
+
+#define SPIDER_SKILL1_COST 40
+#define SPIDER_SKILL2_COST 30
+#define SPIDER_SKILL3_COST 50
+#define RABBIT_SKILL1_COST 60
+#define RABBIT_SKILL2_COST 30
+#define RABBIT_SKILL3_COST 30
+#define BIRD_SKILL1_COST 40
+#define BIRD_SKILL2_COST 30
+#define BIRD_SKILL3_COST 40
 
 int map[25][33] = {
    {1,6,6,6,6,6,6,6,22,6,6,6,6,6,6,6,22,6,6,6,6,6,6,6,22,6,6,6,6,6,6,6,2},
@@ -801,7 +811,7 @@ int PrintRight(int x, int y)
 	gotoxy(x, y + 9);
 	printf("│                │\n");
 	gotoxy(x, y + 10);
-	printf("│                │\n");
+	printf("│    cost:20     │\n");
 	gotoxy(x, y + 11);
 	printf("└────────────────┘\n");
 
@@ -829,7 +839,7 @@ int PrintLeft(int x, int y)
 	gotoxy(x, y + 9);
 	printf("│                │\n");
 	gotoxy(x, y + 10);
-	printf("│                │\n");
+	printf("│    cost:20     │\n");
 	gotoxy(x, y + 11);
 	printf("└────────────────┘\n");
 
@@ -857,7 +867,7 @@ int PrintUp(int x, int y)
 	gotoxy(x, y + 9);
 	printf("│      ■■      │\n");
 	gotoxy(x, y + 10);
-	printf("│                │\n");
+	printf("│    cost:20     │\n");
 	gotoxy(x, y + 11);
 	printf("└────────────────┘\n");
 
@@ -885,7 +895,7 @@ int PrintDown(int x, int y)
 	gotoxy(x, y + 9);
 	printf("│       ▼       │\n");
 	gotoxy(x, y + 10);
-	printf("│                │\n");
+	printf("│    cost:20     │\n");
 	gotoxy(x, y + 11);
 	printf("└────────────────┘\n");
 
@@ -912,7 +922,7 @@ int attack_spider_surprise_attack(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ ■□■   dmg:%d│\n", SPIDER_SKILL1_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ ■□■         │\n");
+	printf("│ ■□■  cost:%d│\n", SPIDER_SKILL1_COST);
 	gotoxy(x, y + 10);
 	printf("│ □□□         │\n");
 	gotoxy(x, y + 11);
@@ -941,7 +951,7 @@ int attack_spider_web(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ ■■■   dmg:%d│\n", SPIDER_SKILL2_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ ■□■         │\n");
+	printf("│ ■□■  cost:%d│\n", SPIDER_SKILL2_COST);
 	gotoxy(x, y + 10);
 	printf("│ ■■■         │\n");
 	gotoxy(x, y + 11);
@@ -970,7 +980,7 @@ int attack_spider_spear(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ ■□■   dmg:%d│\n", SPIDER_SKILL3_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ □□□         │\n");
+	printf("│ □□□  cost:%d│\n", SPIDER_SKILL3_COST);
 	gotoxy(x, y + 10);
 	printf("│ ■□■         │\n");
 	gotoxy(x, y + 11);
@@ -999,9 +1009,9 @@ int attack_rabbit_eat_carrot(int x, int y) {
 	gotoxy(x, y + 7);
 	printf("│           |_|  │\n");
 	gotoxy(x, y + 8);
-	printf("│ hp healing %d  │\n", RABBIT_SKILL1_HEAL);
+	printf("│ hp healing:%d  │\n", RABBIT_SKILL1_HEAL);
 	gotoxy(x, y + 9);
-	printf("│                │\n");
+	printf("│  cost:%d       │\n", RABBIT_SKILL1_COST);
 	gotoxy(x, y + 10);
 	printf("│                │\n");
 	gotoxy(x, y + 11);
@@ -1030,7 +1040,7 @@ int attack_rabbit_tooth_scraping(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ ■□■  dmg:%d │\n", RABBIT_SKILL2_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ ■□■         │\n");
+	printf("│ ■□■  cost:%d│\n", RABBIT_SKILL2_COST);
 	gotoxy(x, y + 10);
 	printf("│ ■□■         │\n");
 	gotoxy(x, y + 11);
@@ -1058,7 +1068,7 @@ int attack_rabbit_Tunnel_digging(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ □■□  dmg:%d │\n", RABBIT_SKILL3_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ ■□■         │\n");
+	printf("│ ■□■  cost:%d│\n", RABBIT_SKILL3_COST);
 	gotoxy(x, y + 10);
 	printf("│ □■□         │\n");
 	gotoxy(x, y + 11);
@@ -1087,7 +1097,7 @@ int attack_bird_descent_attack(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ □□□   dmg:%d│\n", BIRD_SKILL1_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ ■□■         │\n");
+	printf("│ ■□■  cost:%d│\n", BIRD_SKILL1_COST);
 	gotoxy(x, y + 10);
 	printf("│ ■□■         │\n");
 	gotoxy(x, y + 11);
@@ -1115,7 +1125,7 @@ int attack_bird_wing_wind(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ ■■■   dmg:%d│\n", BIRD_SKILL2_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ □□□         │\n");
+	printf("│ □□□  cost:%d│\n", BIRD_SKILL2_COST);
 	gotoxy(x, y + 10);
 	printf("│ ■■■         │\n");
 	gotoxy(x, y + 11);
@@ -1143,7 +1153,7 @@ int attack_bird_piercer(int x, int y) {
 	gotoxy(x, y + 8);
 	printf("│ ■■□   dmg:%d│\n", BIRD_SKILL3_DAMAGE);
 	gotoxy(x, y + 9);
-	printf("│ ■□■         │\n");
+	printf("│ ■□■  cost:%d│\n", BIRD_SKILL3_COST);
 	gotoxy(x, y + 10);
 	printf("│ □■■         │\n");
 	gotoxy(x, y + 11);
@@ -1173,7 +1183,7 @@ int shiledcard(int x, int y) {
 	gotoxy(x, y + 9);
 	printf("│        ``      │\n");
 	gotoxy(x, y + 10);
-	printf("│   dmg - 15     │\n");
+	printf("│dmg:- 15 cost:20│\n");
 	gotoxy(x, y + 11);
 	printf("└────────────────┘\n");
 
@@ -1844,7 +1854,7 @@ int set_hp(int player1_choice, int player2_choice, int *player1_hp, int *player2
 		*player2_hp = 120;
 }
 
-//카드 고를 때 쓰이는 함수
+//카드 고를 때 쓰이는 함수, 코스트 계산하는 함수
 int cards_choice(int *card1, int *card2, int *card3, int player_number, int player_choice)
 {
 	cardblank();
@@ -1874,28 +1884,23 @@ int cards_choice(int *card1, int *card2, int *card3, int player_number, int play
 	}
 	shiledcard(PRINTCARD_X + 60, PRINTCARD_Y + 12);
 
+	gotoxy(70, 25);
+	printf("MAX COST : 100");
 
 	while (1)
 	{
+		int sum_cost = 0;
 		while (1)
 		{
 			temp = getch();
 			if (temp >= 49 && temp <= 56)
 			{
 				gotoxy(70, 27);
-				printf("%d ", temp - 48);
+				printf("%d번 카드", temp - 48);
 				*card1 = temp - 48;
-				break;
-			}
-		}
-		while (1)
-		{
-			temp = getch();
-			if (temp >= 49 && temp <= 56)
-			{
-				gotoxy(75, 27);
-				printf("%d ", temp - 48);
-				*card2 = temp - 48;
+				sum_cost += check_cost(*card1, player_choice);
+				gotoxy(70, 26);
+				printf("cost:%d", sum_cost);
 				break;
 			}
 		}
@@ -1905,22 +1910,75 @@ int cards_choice(int *card1, int *card2, int *card3, int player_number, int play
 			if (temp >= 49 && temp <= 56)
 			{
 				gotoxy(80, 27);
-				printf("%d ", temp - 48);
+				printf("%d번 카드", temp - 48);
+				*card2 = temp - 48;
+				sum_cost += check_cost(*card2, player_choice);
+				gotoxy(70, 26);
+				printf("cost:%d", sum_cost);
+				break;
+			}
+		}
+		while (1)
+		{
+			temp = getch();
+			if (temp >= 49 && temp <= 56)
+			{
+				gotoxy(90, 27);
+				printf("%d번 카드", temp - 48);
 				*card3 = temp - 48;
+				sum_cost += check_cost(*card3, player_choice);
+				gotoxy(70, 26);
+				printf("cost:%d", sum_cost);
 				break;
 			}
 		}
 		pause();
 		gotoxy(70, 27);
-		printf("  ");
-
-		gotoxy(75, 27);
-		printf("  ");
+		printf("       ");
 
 		gotoxy(80, 27);
-		printf("  ");
-		if (*card1 != *card2 || *card1 != *card3 || *card2 != *card3)
+		printf("       ");
+
+		gotoxy(90, 27);
+		printf("       ");
+
+		gotoxy(70, 26);
+		printf("             ");
+
+		if ((*card1 != *card2 || *card1 != *card3 || *card2 != *card3) && sum_cost <= 100)
 			break;
+	}
+}
+int check_cost(int card, int player_choice)
+{
+	if ((card >= MR && card <= MD) || card == GUA)
+		return 20;
+	if (player_choice == SPIDER_NUMBER)
+	{
+		if (card == SK1)
+			return SPIDER_SKILL1_COST;
+		else if (card == SK2)
+			return SPIDER_SKILL2_COST;
+		else if (card == SK3)
+			return SPIDER_SKILL3_COST;
+	}
+	else if (player_choice == RABBIT_NUMBER)
+	{
+		if (card == SK1)
+			return RABBIT_SKILL1_COST;
+		else if (card == SK2)
+			return RABBIT_SKILL2_COST;
+		else if (card == SK3)
+			return RABBIT_SKILL3_COST;
+	}
+	else
+	{
+		if (card == SK1)
+			return BIRD_SKILL1_COST;
+		else if (card == SK2)
+			return BIRD_SKILL2_COST;
+		else if (card == SK3)
+			return BIRD_SKILL3_COST;
 	}
 }
 
@@ -2729,7 +2787,7 @@ int bird_skill1_effect(int bird_x, int bird_y, int enemy_card) {
 			bird_skill1_fourth(bird_y + 8, bird_x);
 			check2 = 1;
 		}
-		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+		if (bird_y + 8 < 29 && bird_x + 8 < 21) {
 			bird_skill1_third(bird_y + 8, bird_x + 8);
 			check4 = 1;
 		}
@@ -2746,7 +2804,7 @@ int bird_skill1_effect(int bird_x, int bird_y, int enemy_card) {
 			bird_skill1_first(bird_y + 8, bird_x);
 			check2 = 1;
 		}
-		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+		if (bird_y + 8 < 29 && bird_x + 8 < 21) {
 			bird_skill1_fourth(bird_y + 8, bird_x + 8);
 			check4 = 1;
 		}
@@ -2763,7 +2821,7 @@ int bird_skill1_effect(int bird_x, int bird_y, int enemy_card) {
 			bird_skill1_second(bird_y + 8, bird_x);
 			check2 = 1;
 		}
-		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+		if (bird_y + 8 < 29 && bird_x + 8 < 21) {
 			bird_skill1_first(bird_y + 8, bird_x + 8);
 			check4 = 1;
 		}
@@ -2780,7 +2838,7 @@ int bird_skill1_effect(int bird_x, int bird_y, int enemy_card) {
 			bird_skill1_third(bird_y + 8, bird_x);
 			check2 = 1;
 		}
-		if (bird_y + 8 < 29, bird_x + 8 < 21) {
+		if (bird_y + 8 < 29 && bird_x + 8 < 21) {
 			bird_skill1_second(bird_y + 8, bird_x + 8);
 			check4 = 1;
 		}
@@ -2800,7 +2858,7 @@ int bird_skill1_effect(int bird_x, int bird_y, int enemy_card) {
 		bird_skill1_death(bird_y + 8, bird_x);
 		check2 = 1;
 	}
-	if (bird_y + 8 < 29, bird_x + 8 < 21) {
+	if (bird_y + 8 < 29 && bird_x + 8 < 21) {
 		bird_skill1_death(bird_y + 8, bird_x + 8);
 		check4 = 1;
 	}
@@ -4439,6 +4497,4 @@ int check_enemy_place(int spider_x, int spider_y, int enemy_card)
 			print_bird(spider_x, spider_y);
 	}
 }
-
-
 //END------------------------
